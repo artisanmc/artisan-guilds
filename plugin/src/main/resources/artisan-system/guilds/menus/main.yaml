@@ -4,19 +4,21 @@ title:
     value:
       en: "Guild"
       fr: "Guilde"
-size: 27
+size: 45
 inputs:
   # One row: the viewer's guild. Not named "guild": the commands below take an argument of
   # that name, which module_command would fill from it.
   - name: info
     type: list
     source: { ref: "guilds:guild" }
-background:
-  material: BLACK_STAINED_GLASS_PANE
-  title: " "
 elements:
+  # A frame around the menu: the guild on its own row, then two rows of three entries.
+  - id: border
+    positions: "0-9,17,18,26,27,35,36-39,41-44"
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
   - id: guild
-    positions: "4"
+    positions: "13"
     iterates: { source: info, alias: g }
     material: WHITE_BANNER
     title: "<gold><bold>{g.name}"
@@ -36,7 +38,7 @@ elements:
         - "<gray>Ton grade : {g.rank}"
         - "<gray>Créée le : <white>{g.created}"
   - id: members
-    positions: "10"
+    positions: "20"
     material: PLAYER_HEAD
     head: "playerhead:{player.name}"
     title:
@@ -53,7 +55,7 @@ elements:
       left:
         - module_command: { command: "guilds:guild.members" }
   - id: ranks
-    positions: "11"
+    positions: "22"
     material: NAME_TAG
     title:
       en: "<yellow>Ranks"
@@ -67,7 +69,7 @@ elements:
       left:
         - module_command: { command: "guilds:guild.ranks" }
   - id: chest
-    positions: "12"
+    positions: "24"
     iterates: { source: info, alias: g }
     material: CHEST
     title:
@@ -82,7 +84,7 @@ elements:
       left:
         - module_command: { command: "guilds:guild.chest" }
   - id: bank
-    positions: "13"
+    positions: "29"
     iterates: { source: info, alias: g }
     material: GOLD_INGOT
     title:
@@ -100,7 +102,7 @@ elements:
         - "<gray>/g bank deposit <montant>"
         - "<gray>/g bank withdraw <montant>"
   - id: home
-    positions: "14"
+    positions: "31"
     material: RED_BED
     title:
       en: "<yellow>Home"
@@ -115,7 +117,7 @@ elements:
         - close_menu
         - module_command: { command: "guilds:guild.home" }
   - id: logs
-    positions: "15"
+    positions: "33"
     material: WRITABLE_BOOK
     title:
       en: "<yellow>Log"
@@ -130,7 +132,7 @@ elements:
         - close_menu
         - module_command: { command: "guilds:guild.logs" }
   - id: close
-    positions: "22"
+    positions: "40"
     material: BARRIER
     title:
       en: "<red>Close"
