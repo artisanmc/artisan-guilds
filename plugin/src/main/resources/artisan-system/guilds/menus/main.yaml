@@ -4,7 +4,7 @@ title:
     value:
       en: "Guild"
       fr: "Guilde"
-size: 45
+size: 54
 inputs:
   # One row: the viewer's guild. Not named "guild": the commands below take an argument of
   # that name, which module_command would fill from it.
@@ -14,11 +14,11 @@ inputs:
 elements:
   # A frame around the menu: the guild on its own row, then two rows of three entries.
   - id: border
-    positions: "0-9,17,18,26,27,35,36-39,41-44"
+    positions: "0-3,5-9,17,18,26,27,35,36,44,45-48,50-53"
     material: GRAY_STAINED_GLASS_PANE
     title: " "
   - id: guild
-    positions: "13"
+    positions: "4"
     iterates: { source: info, alias: g }
     material: WHITE_BANNER
     title: "<gold><bold>{g.name}"
@@ -132,7 +132,7 @@ elements:
         - close_menu
         - module_command: { command: "guilds:guild.logs" }
   - id: close
-    positions: "40"
+    positions: "49"
     material: BARRIER
     title:
       en: "<red>Close"
