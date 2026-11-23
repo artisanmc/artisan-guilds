@@ -315,7 +315,6 @@ public final class GuildsModule implements ArtisanModule {
                 new DataSourceField("level", ModelFieldType.integer(), null),
                 new DataSourceField("max_level", ModelFieldType.integer(), "The highest level of data/settings.yml"),
                 new DataSourceField("balance", ModelFieldType.integer(), "The bank, rounded"),
-                new DataSourceField("balance_short", ModelFieldType.string(), "The bank in at most 5 characters: 9999, 18.4K, 184K, 1.8M, up to T"),
                 new DataSourceField("members", ModelFieldType.integer(), null),
                 new DataSourceField("max_members", ModelFieldType.integer(), "At this level"),
                 new DataSourceField("online", ModelFieldType.integer(), "Members online on the network"),

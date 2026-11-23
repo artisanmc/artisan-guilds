@@ -48,29 +48,6 @@ public final class GuildMenuData {
         this.messages = messages;
     }
 
-    private static final String[] UNITS = {"K", "M", "B", "T"};
-
-    /**
-     * A sum short enough for the textured menu's bank box (at most 5 characters): as is below
-     * 10,000, then 18.4K, 184K, 1.8M… up to T; the decimal only below 100 of a unit, never ".0".
-     */
-    static String compact(long value) {
-        long abs = Math.abs(value);
-        String sign = value < 0 ? "-" : "";
-        if (abs < 10_000) return sign + abs;
-        int unit = 0;
-        long divisor = 1000;
-        while (unit < UNITS.length - 1 && abs / divisor >= 1000) {
-            divisor *= 1000;
-            unit++;
-        }
-        // whole numbers, rounded down: a balance never reads higher than it is (999,999 is 999K)
-        long whole = abs / divisor;
-        if (whole >= 100) return sign + whole + UNITS[unit];
-        long tenth = abs % divisor / (divisor / 10);
-        return sign + whole + (tenth == 0 ? "" : "." + tenth) + UNITS[unit];
-    }
-
     /** The viewer's guild as the main menu shows it: one row, none outside a guild. */
     public List<Map<String, Object>> guild(@Nullable Player viewer) {
         Map<String, Object> row = new LinkedHashMap<>();
@@ -80,7 +57,6 @@ public final class GuildMenuData {
             row.put("level", 2);
             row.put("max_level", 10);
             row.put("balance", 1500L);
-            row.put("balance_short", compact(1500L));
             row.put("members", 4);
             row.put("max_members", 7);
             row.put("online", 2);
@@ -107,7 +83,6 @@ public final class GuildMenuData {
         row.put("level", info.level());
         row.put("max_level", leveling.maxLevel());
         row.put("balance", Math.round(guild.getBalance()));
-        row.put("balance_short", compact(Math.round(guild.getBalance())));
         row.put("members", guild.getMembers().size());
         row.put("max_members", info.maxMembers());
         row.put("online", guild.getOnlineMembers().size());

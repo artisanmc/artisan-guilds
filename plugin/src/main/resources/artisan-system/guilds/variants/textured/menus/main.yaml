@@ -175,7 +175,7 @@ elements:
   - id: bank
     positions: "45-47"
     image: { asset: guilds_balance, fit: native }
-    label: { text: "<gold>{info[0].balance_short}", offset_x: 5 }
+    label: { text: "<gold>{info[0].balance.compact()}", offset_x: 5 }
     title:
       en: "<yellow>Bank: <white>{info[0].balance}"
       fr: "<yellow>Banque : <white>{info[0].balance}"

@@ -143,24 +143,6 @@ class GuildMenuTest {
     }
 
     @Test
-    void bankBalanceIsShortenedForTheTexturedBox() {
-        assertEquals("0", GuildMenuData.compact(0));
-        assertEquals("9999", GuildMenuData.compact(9_999));
-        assertEquals("18.4K", GuildMenuData.compact(18_450));
-        assertEquals("10K", GuildMenuData.compact(10_000));
-        assertEquals("184K", GuildMenuData.compact(184_999));
-        assertEquals("999K", GuildMenuData.compact(999_999));
-        assertEquals("1M", GuildMenuData.compact(1_000_000));
-        assertEquals("1.8M", GuildMenuData.compact(1_850_000));
-        assertEquals("250B", GuildMenuData.compact(250_000_000_000L));
-        assertEquals("12T", GuildMenuData.compact(12_000_000_000_000L));
-        assertEquals("12000T", GuildMenuData.compact(12_000_000_000_000_000L));
-        assertEquals("-18.4K", GuildMenuData.compact(-18_450));
-        assertEquals("2.3M", GuildMenuData.compact(2_300_000));
-        assertEquals("99.9K", GuildMenuData.compact(99_999));
-    }
-
-    @Test
     void alliancesListAlliesThenOffersReceivedThenOffersSent() {
         GuildData zeta = guildOf("Zed", "Zeta");
         GuildData beta = guildOf("Eve", "Beta");
