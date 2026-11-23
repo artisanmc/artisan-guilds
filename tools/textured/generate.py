@@ -437,20 +437,21 @@ def back():
     underside a shade darker, outlined."""
     n = 16
     m = [[False] * n for _ in range(n)]
-    cx, cy = 9.0, 10.5
+    cx, cy = 9.5, 6.0
     for y in range(n):
         for x in range(n):
             r = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
-            a = math.degrees(math.atan2(cy - y - 0.5, x + 0.5 - cx)) % 360
-            if 2.6 <= r <= 5.4 and (a <= 95 or a >= 320):
-                m[y][x] = True  # the curve, from the top round to the right and down
-    for x in range(5, 10):
-        for y in (5, 6, 7):
-            m[y][x] = True  # the shaft
-    for x in range(1, 6):
-        for y in range(6 - (x - 1), 6 + (x - 1) + 1):
+            if x + 0.5 >= cx and 2.5 <= r < 5.5:
+                m[y][x] = True  # the U-turn on the right
+    for x in range(6, 10):
+        for y in (1, 2, 3):
+            m[y][x] = True  # the tail, along the top
+    for x in range(4, 10):
+        for y in (9, 10, 11):
+            m[y][x] = True  # the shaft, along the bottom
+    for x in range(1, 5):
+        for y in range(10 - (x - 1), 10 + (x - 1) + 1):
             m[y][x] = True  # the head, pointing left
-    m = m[::-1]  # turned upside down: the tail leaves from the top, the head points left at the bottom
     t = Image.new("RGBA", (n, n), CLEAR)
     for y in range(n):
         for x in range(n):
