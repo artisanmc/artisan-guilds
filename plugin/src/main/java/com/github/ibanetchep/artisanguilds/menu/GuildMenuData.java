@@ -67,6 +67,10 @@ public final class GuildMenuData {
             row.put("has_home", true);
             row.put("created", "01/01/2026");
             row.put("can_manage_ranks", true);
+            row.put("chat", "guild");
+            row.put("allies", 1);
+            row.put("alliance_offers", 1);
+            row.put("can_manage_alliances", true);
             return List.of(row);
         }
         MemberData member = registry.member(viewer.getUniqueId());
@@ -89,7 +93,58 @@ public final class GuildMenuData {
         row.put("has_home", guild.getHome() != null);
         row.put("created", DATE.format(guild.getCreatedAt().atZone(ZoneId.systemDefault())));
         row.put("can_manage_ranks", member.isGranted(GuildPermission.MANAGE_RANKS));
+        row.put("chat", member.getChatMode().name().toLowerCase(Locale.ROOT));
+        row.put("allies", guild.getAlliances().size());
+        row.put("alliance_offers", offersTo(guild).size());
+        row.put("can_manage_alliances", member.isGranted(GuildPermission.MANAGE_ALLIANCES));
         return List.of(row);
+    }
+
+    /**
+     * The viewer's guild's alliances: its allies ({@code ally}), then the guilds that offered it one
+     * ({@code offer}, to accept), then those it offered one to ({@code sent}, waiting), each by name.
+     */
+    public List<Map<String, Object>> alliances(@Nullable Player viewer) {
+        if (viewer == null) {
+            return List.of(allianceRow("00000000-0000-0000-0000-000000000003", "Allies", "ally", 6, 2, true),
+                    allianceRow("00000000-0000-0000-0000-000000000004", "Neighbours", "offer", 3, 1, true));
+        }
+        MemberData member = registry.member(viewer.getUniqueId());
+        if (member == null) return List.of();
+        GuildData guild = member.getGuild();
+        boolean manage = member.isGranted(GuildPermission.MANAGE_ALLIANCES);
+        Comparator<GuildData> byName = Comparator.comparing(GuildData::getName, String.CASE_INSENSITIVE_ORDER);
+        List<Map<String, Object>> rows = new ArrayList<>();
+        guild.allianceIds().stream().map(registry::get).filter(g -> g != null).sorted(byName)
+                .forEach(g -> rows.add(allianceRow(g, "ally", manage)));
+        offersTo(guild).stream().sorted(byName).forEach(g -> rows.add(allianceRow(g, "offer", manage)));
+        guild.allianceInvites().stream().map(registry::get).filter(g -> g != null).sorted(byName)
+                .forEach(g -> rows.add(allianceRow(g, "sent", manage)));
+        return rows;
+    }
+
+    /** The guilds that offered {@code guild} an alliance it has not answered. */
+    private List<GuildData> offersTo(GuildData guild) {
+        return registry.all().stream()
+                .filter(g -> g.allianceInvites().contains(guild.getId()) && !guild.allianceIds().contains(g.getId()))
+                .toList();
+    }
+
+    private static Map<String, Object> allianceRow(GuildData guild, String state, boolean canManage) {
+        return allianceRow(guild.getId().toString(), guild.getName(), state, guild.getMembers().size(),
+                guild.getOnlineMembers().size(), canManage);
+    }
+
+    private static Map<String, Object> allianceRow(String id, String name, String state, int members, int online,
+                                                   boolean canManage) {
+        Map<String, Object> row = new LinkedHashMap<>();
+        row.put("id", id);
+        row.put("name", name);
+        row.put("state", state);
+        row.put("members", members);
+        row.put("online", online);
+        row.put("can_manage", canManage);
+        return row;
     }
 
     /** One row: the viewer's guild and what they may do in it. */

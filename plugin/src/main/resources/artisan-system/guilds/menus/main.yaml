@@ -12,7 +12,7 @@ inputs:
     type: list
     source: { ref: "guilds:guild" }
 elements:
-  # A frame around the menu: the guild on its own row, then two rows of three entries.
+  # A frame around the menu: the guild on its own row, then two rows of four entries.
   - id: border
     positions: "0-3,5-9,17,18,26,27,35,36,44,45-48,50-53"
     material: GRAY_STAINED_GLASS_PANE
@@ -24,21 +24,22 @@ elements:
     title: "<gold><bold>{g.name}"
     lore:
       en:
-        - "<gray>Level: <white>{g.level}<gray>/{g.max_level}"
+        # No level line on a server with a single level.
+        - '{g.max_level > 1 ? "<gray>Level: <white>" + g.level + "<gray>/" + g.max_level : ""}'
         - "<gray>Members: <white>{g.members}<gray>/{g.max_members} <dark_gray>({g.online} online)"
         - "<gray>Bank: <white>{g.balance}"
         - "<gray>Founder: <white>{g.owner}"
         - "<gray>Your rank: {g.rank}"
         - "<gray>Created: <white>{g.created}"
       fr:
-        - "<gray>Niveau : <white>{g.level}<gray>/{g.max_level}"
+        - '{g.max_level > 1 ? "<gray>Niveau : <white>" + g.level + "<gray>/" + g.max_level : ""}'
         - "<gray>Membres : <white>{g.members}<gray>/{g.max_members} <dark_gray>({g.online} en ligne)"
         - "<gray>Banque : <white>{g.balance}"
         - "<gray>Fondateur : <white>{g.owner}"
         - "<gray>Ton grade : {g.rank}"
         - "<gray>Créée le : <white>{g.created}"
   - id: members
-    positions: "20"
+    positions: "19"
     material: PLAYER_HEAD
     head: "playerhead:{player.name}"
     title:
@@ -55,7 +56,7 @@ elements:
       left:
         - module_command: { command: "guilds:guild.members" }
   - id: ranks
-    positions: "22"
+    positions: "21"
     material: NAME_TAG
     title:
       en: "<yellow>Ranks"
@@ -68,8 +69,25 @@ elements:
     click:
       left:
         - module_command: { command: "guilds:guild.ranks" }
+  - id: alliances
+    positions: "23"
+    iterates: { source: info, alias: g }
+    material: SHIELD
+    title:
+      en: "<yellow>Alliances"
+      fr: "<yellow>Alliances"
+    lore:
+      en:
+        - "<gray>Allies: <white>{g.allies}"
+        - '{g.alliance_offers > 0 ? "<gold>" + g.alliance_offers + " alliance offer(s) to answer" : ""}'
+      fr:
+        - "<gray>Alliés : <white>{g.allies}"
+        - '{g.alliance_offers > 0 ? "<gold>" + g.alliance_offers + " alliance(s) proposée(s), à étudier" : ""}'
+    click:
+      left:
+        - module_command: { command: "guilds:guild.alliance" }
   - id: chest
-    positions: "24"
+    positions: "25"
     iterates: { source: info, alias: g }
     material: CHEST
     title:
@@ -84,7 +102,7 @@ elements:
       left:
         - module_command: { command: "guilds:guild.chest" }
   - id: bank
-    positions: "29"
+    positions: "28"
     iterates: { source: info, alias: g }
     material: GOLD_INGOT
     title:
@@ -102,7 +120,7 @@ elements:
         - "<gray>/g bank deposit <montant>"
         - "<gray>/g bank withdraw <montant>"
   - id: home
-    positions: "31"
+    positions: "30"
     material: RED_BED
     title:
       en: "<yellow>Home"
@@ -117,7 +135,7 @@ elements:
         - close_menu
         - module_command: { command: "guilds:guild.home" }
   - id: logs
-    positions: "33"
+    positions: "32"
     material: WRITABLE_BOOK
     title:
       en: "<yellow>Log"
@@ -131,6 +149,67 @@ elements:
       left:
         - close_menu
         - module_command: { command: "guilds:guild.logs" }
+  # Where the viewer's chat lines go; a click moves to the next mode (/guild chat). A state replaces
+  # the whole display, click included.
+  - id: chat
+    positions: "34"
+    iterates: { source: info, alias: g }
+    material: WHITE_DYE
+    title:
+      en: "<yellow>Chat: <white>public"
+      fr: "<yellow>Chat : <white>public"
+    lore:
+      en:
+        - "<gray>Your messages go to everyone."
+        - ""
+        - "<green>Click: guild chat"
+      fr:
+        - "<gray>Tes messages vont à tout le monde."
+        - ""
+        - "<green>Clic : chat de guilde"
+    click:
+      left:
+        - module_command: { command: "guilds:guild.chat" }
+        - set_arg: { arg: refresh, value: "{g.chat}" }
+    states:
+      - if:
+          - placeholder_equals: { placeholder: "{g.chat}", value: "guild" }
+        material: LIME_DYE
+        title:
+          en: "<yellow>Chat: <green>guild"
+          fr: "<yellow>Chat : <green>guilde"
+        lore:
+          en:
+            - "<gray>Your messages go to your guild only."
+            - ""
+            - "<green>Click: alliance chat"
+          fr:
+            - "<gray>Tes messages ne vont qu'à ta guilde."
+            - ""
+            - "<green>Clic : chat d'alliance"
+        click:
+          left:
+            - module_command: { command: "guilds:guild.chat" }
+            - set_arg: { arg: refresh, value: "{g.chat}" }
+      - if:
+          - placeholder_equals: { placeholder: "{g.chat}", value: "ally" }
+        material: LIGHT_BLUE_DYE
+        title:
+          en: "<yellow>Chat: <aqua>alliance"
+          fr: "<yellow>Chat : <aqua>alliance"
+        lore:
+          en:
+            - "<gray>Your messages go to your guild and its allies."
+            - ""
+            - "<green>Click: public chat"
+          fr:
+            - "<gray>Tes messages vont à ta guilde et à ses alliés."
+            - ""
+            - "<green>Clic : chat public"
+        click:
+          left:
+            - module_command: { command: "guilds:guild.chat" }
+            - set_arg: { arg: refresh, value: "{g.chat}" }
   - id: close
     positions: "49"
     material: BARRIER

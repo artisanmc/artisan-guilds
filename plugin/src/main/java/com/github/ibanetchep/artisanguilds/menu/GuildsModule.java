@@ -69,9 +69,13 @@ public final class GuildsModule implements ArtisanModule {
             "menus/rank_permissions.yaml",
             "menus/rank_delete_confirm.yaml",
             "menus/disband_confirm.yaml",
+            // Version 7: the alliances.
+            "menus/alliances.yaml",
+            "menus/alliance_end_confirm.yaml",
             "dialogs/rank_create.yaml",
             "dialogs/rank_rename.yaml",
             "dialogs/kick.yaml",
+            "dialogs/alliance_offer.yaml",
             // Version 4: the Bedrock versions of the menus that use other clicks than the left one
             // (variants.yaml: who sees which).
             "variants.yaml",
@@ -87,24 +91,36 @@ public final class GuildsModule implements ArtisanModule {
             "variants/textured/menus/rank_permissions.yaml",
             "variants/textured/menus/rank_delete_confirm.yaml",
             "variants/textured/menus/disband_confirm.yaml",
+            "variants/textured/menus/alliances.yaml",
+            "variants/textured/menus/alliance_end_confirm.yaml",
             "assets/glyphs/guilds_confirm_background.png",
             "assets/glyphs/guilds_confirm_background.yml",
             "assets/glyphs/guilds_list_background.png",
             "assets/glyphs/guilds_list_background.yml",
             "assets/glyphs/guilds_main_background.png",
             "assets/glyphs/guilds_main_background.yml",
-            "assets/textures/guilds_back.png",
-            "assets/textures/guilds_back.yml",
+            "assets/textures/guilds_alliance.png",
+            "assets/textures/guilds_alliance.yml",
+            "assets/textures/guilds_alliance_offer.png",
+            "assets/textures/guilds_alliance_offer.yml",
+            "assets/textures/guilds_alliance_sent.png",
+            "assets/textures/guilds_alliance_sent.yml",
+            "assets/textures/guilds_balance.png",
+            "assets/textures/guilds_balance.yml",
             "assets/textures/guilds_button.png",
             "assets/textures/guilds_button.yml",
+            "assets/textures/guilds_button_back.png",
+            "assets/textures/guilds_button_back.yml",
             "assets/textures/guilds_button_danger.png",
             "assets/textures/guilds_button_danger.yml",
             "assets/textures/guilds_button_locked.png",
             "assets/textures/guilds_button_locked.yml",
             "assets/textures/guilds_button_plain.png",
             "assets/textures/guilds_button_plain.yml",
-            "assets/textures/guilds_card_bank.png",
-            "assets/textures/guilds_card_bank.yml",
+            "assets/textures/guilds_card_alliances.png",
+            "assets/textures/guilds_card_alliances.yml",
+            "assets/textures/guilds_card_alliances_offer.png",
+            "assets/textures/guilds_card_alliances_offer.yml",
             "assets/textures/guilds_card_chest.png",
             "assets/textures/guilds_card_chest.yml",
             "assets/textures/guilds_card_home.png",
@@ -115,10 +131,16 @@ public final class GuildsModule implements ArtisanModule {
             "assets/textures/guilds_card_members.yml",
             "assets/textures/guilds_card_ranks.png",
             "assets/textures/guilds_card_ranks.yml",
+            "assets/textures/guilds_chat_ally.png",
+            "assets/textures/guilds_chat_ally.yml",
+            "assets/textures/guilds_chat_guild.png",
+            "assets/textures/guilds_chat_guild.yml",
+            "assets/textures/guilds_chat_public.png",
+            "assets/textures/guilds_chat_public.yml",
             "assets/textures/guilds_close.png",
             "assets/textures/guilds_close.yml",
-            "assets/textures/guilds_level.png",
-            "assets/textures/guilds_level.yml",
+            "assets/textures/guilds_members_count.png",
+            "assets/textures/guilds_members_count.yml",
             "assets/textures/guilds_next.png",
             "assets/textures/guilds_next.yml",
             "assets/textures/guilds_next_off.png",
@@ -143,6 +165,7 @@ public final class GuildsModule implements ArtisanModule {
     public static final String RANKS = "guilds:ranks";
     public static final String RANK_PERMISSIONS = "guilds:rank_permissions";
     public static final String MEMBERS = "guilds:members";
+    public static final String ALLIANCES = "guilds:alliances";
 
     public static final String RANK_MOVE = "guilds:rank_move";
     public static final String RANK_DELETE = "guilds:rank_delete";
@@ -301,7 +324,11 @@ public final class GuildsModule implements ArtisanModule {
                 new DataSourceField("chest_rows", ModelFieldType.integer(), null),
                 new DataSourceField("has_home", ModelFieldType.bool(), null),
                 new DataSourceField("created", ModelFieldType.string(), "dd/MM/yyyy"),
-                new DataSourceField("can_manage_ranks", ModelFieldType.bool(), "Owner, MANAGE_RANKS, or guilds.bypass"))));
+                new DataSourceField("can_manage_ranks", ModelFieldType.bool(), "Owner, MANAGE_RANKS, or guilds.bypass"),
+                new DataSourceField("chat", ModelFieldType.string(), "The viewer's chat mode: public, guild or ally"),
+                new DataSourceField("allies", ModelFieldType.integer(), "Guilds allied with this one"),
+                new DataSourceField("alliance_offers", ModelFieldType.integer(), "Alliances offered to this guild, not answered"),
+                new DataSourceField("can_manage_alliances", ModelFieldType.bool(), "Owner, MANAGE_ALLIANCES, or guilds.bypass"))));
 
         api.getDataSources().register(new DataSourceDeclaration(RANKS, (player, params) -> data.ranks(player), List.of(
                 new DataSourceField("id", ModelFieldType.string(), "What the guilds:rank_* actions take"),
@@ -329,6 +356,15 @@ public final class GuildsModule implements ArtisanModule {
                 new DataSourceField("can_promote", ModelFieldType.bool(), "As /guild promote checks it"),
                 new DataSourceField("can_demote", ModelFieldType.bool(), "As /guild demote checks it"),
                 new DataSourceField("can_kick", ModelFieldType.bool(), "As /guild kick checks it"))));
+
+        api.getDataSources().register(new DataSourceDeclaration(ALLIANCES, (player, params) -> data.alliances(player), List.of(
+                new DataSourceField("id", ModelFieldType.string(), null),
+                new DataSourceField("name", ModelFieldType.string(), "What /guild alliance takes"),
+                new DataSourceField("state", ModelFieldType.string(),
+                        "ally; offer: it offered an alliance to the viewer's guild; sent: the viewer's guild offered one"),
+                new DataSourceField("members", ModelFieldType.integer(), null),
+                new DataSourceField("online", ModelFieldType.integer(), "Members online on the network"),
+                new DataSourceField("can_manage", ModelFieldType.bool(), "The viewer may accept or end alliances"))));
     }
 
     private void registerActions(ArtisanAPI api) {

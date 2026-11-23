@@ -1,0 +1,49 @@
+schema: menu/v1
+title:
+  - kind: plain
+    value:
+      en: "<dark_red>End this alliance?"
+      fr: "<dark_red>Rompre cette alliance ?"
+size: 27
+inputs:
+  # The allied guild's id, given by the alliances menu.
+  - name: ally
+    type: string
+  - name: info
+    type: list
+    source: { ref: "guilds:alliances", filter: { id: "{ally}" } }
+elements:
+  - id: frame
+    positions: "0-26"
+    material: GRAY_STAINED_GLASS_PANE
+    title: " "
+  - id: ally
+    positions: "13"
+    iterates: { source: info, alias: a }
+    material: LIME_BANNER
+    title: "<white>{a.name}"
+    lore:
+      en:
+        - "<gray>Its members leave your alliance chat."
+      fr:
+        - "<gray>Ses membres quittent ton chat d'alliance."
+  - id: confirm
+    positions: "11"
+    iterates: { source: info, alias: a }
+    material: LIME_CONCRETE
+    title:
+      en: "<green>End the alliance"
+      fr: "<green>Rompre l'alliance"
+    click:
+      left:
+        - module_command: { command: "guilds:guild.alliance.remove", args: { guild: "{a.name}" } }
+        - open_previous_menu
+  - id: cancel
+    positions: "15"
+    material: RED_CONCRETE
+    title:
+      en: "<red>Cancel"
+      fr: "<red>Annuler"
+    click:
+      left:
+        - open_previous_menu

@@ -1,0 +1,159 @@
+schema: menu/v1
+# The guild's alliances for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/alliances.yaml drawn with images. Same inputs, same clicks. The window is the image
+# guilds_list_background (vanilla_texture: false). An ally is a green plate with its shield, an
+# offer to answer a gold one with a letter, an offer sent a grey one with an hourglass. A state
+# replaces the whole display: each one repeats the guild's title.
+title:
+  - kind: background
+    asset_id: guilds_list_background
+  - kind: textarea
+    value: { en: "Guild alliances", fr: "Alliances de la guilde" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+size: 54
+vanilla_texture: false
+inputs:
+  - name: viewer
+    type: list
+    source: { ref: "guilds:guild" }
+  # The allies, then the offers to answer, then the offers sent.
+  - name: alliances
+    type: list
+    source: { ref: "guilds:alliances" }
+elements:
+  - id: alliances
+    positions: "10-16,19-25,28-34,37-43"
+    iterates: { source: alliances, alias: a }
+    states:
+      - if:
+          - placeholder_equals: { placeholder: "{a.state}", value: "ally" }
+        image: { asset: guilds_alliance, fit: native }
+        material: LIME_BANNER
+        title: "<white>{a.name}"
+        lore:
+          en:
+            - "<green>Allied"
+            - "<gray>Members: <white>{a.members} <dark_gray>({a.online} online)"
+            - '{a.can_manage ? "\n<red>Click: end the alliance" : ""}'
+          fr:
+            - "<green>Alliée"
+            - "<gray>Membres : <white>{a.members} <dark_gray>({a.online} en ligne)"
+            - '{a.can_manage ? "\n<red>Clic : rompre l''alliance" : ""}'
+        click:
+          left:
+            - if:
+                - expression: a.can_manage
+              do:
+                - open_menu: { menu_id: alliance_end_confirm, context: { ally: "{a.id}" } }
+      - if:
+          - placeholder_equals: { placeholder: "{a.state}", value: "offer" }
+        image: { asset: guilds_alliance_offer, fit: native }
+        material: YELLOW_BANNER
+        title: "<white>{a.name}"
+        lore:
+          en:
+            - "<gold>Offers your guild an alliance"
+            - "<gray>Members: <white>{a.members} <dark_gray>({a.online} online)"
+            - '{a.can_manage ? "\n<green>Click: accept" : ""}'
+          fr:
+            - "<gold>Propose une alliance à ta guilde"
+            - "<gray>Membres : <white>{a.members} <dark_gray>({a.online} en ligne)"
+            - '{a.can_manage ? "\n<green>Clic : accepter" : ""}'
+        click:
+          left:
+            - if:
+                - expression: a.can_manage
+              do:
+                - module_command: { command: "guilds:guild.alliance.accept", args: { guild: "{a.name}" } }
+                - set_arg: { arg: refresh, value: "{a.id}" }
+    # Without a state, an offer sent: no click.
+    image: { asset: guilds_alliance_sent, fit: native }
+    material: LIGHT_GRAY_BANNER
+    title: "<white>{a.name}"
+    lore:
+      en:
+        - "<gray>Alliance offered, waiting for an answer"
+        - "<gray>Members: <white>{a.members} <dark_gray>({a.online} online)"
+      fr:
+        - "<gray>Alliance proposée, en attente de réponse"
+        - "<gray>Membres : <white>{a.members} <dark_gray>({a.online} en ligne)"
+  - id: previous
+    positions: "18,27"
+    states:
+      - if:
+          - pagination_at_first: alliances
+        image: { asset: guilds_prev_off, fit: native }
+        title: " "
+    image: { asset: guilds_prev, fit: native }
+    title:
+      en: "<yellow>Previous"
+      fr: "<yellow>Précédent"
+    click:
+      left:
+        - pagination_prev: alliances
+  - id: next
+    positions: "26,35"
+    states:
+      - if:
+          - pagination_at_last: alliances
+        image: { asset: guilds_next_off, fit: native }
+        title: " "
+    image: { asset: guilds_next, fit: native }
+    title:
+      en: "<yellow>Next"
+      fr: "<yellow>Suivant"
+    click:
+      left:
+        - pagination_next: alliances
+  - id: back
+    positions: "45-47"
+    image: { asset: guilds_button_back, fit: native }
+    label: { text: { en: "<white>Back", fr: "<white>Retour" }, offset_x: 4, offset_y: 1 }
+    title:
+      en: "<gray>Back"
+      fr: "<gray>Retour"
+    click:
+      left:
+        - open_previous_menu
+  # Offer an alliance; without the right to manage them, the same button greyed with a lock says why.
+  - id: offer
+    positions: "48-50"
+    states:
+      - if:
+          - placeholder_equals: { placeholder: "{viewer[0].can_manage_alliances}", value: "true" }
+        image: { asset: guilds_button, fit: native }
+        label: { text: { en: "<white>Offer", fr: "<white>Proposer" }, offset_y: 1 }
+        title:
+          en: "<dark_green><bold>Offer an alliance"
+          fr: "<dark_green><bold>Proposer une alliance"
+        lore:
+          en:
+            - "<gray>Click: name the guild"
+          fr:
+            - "<gray>Clic : indiquer la guilde"
+        click:
+          left:
+            - open_dialog: alliance_offer
+    image: { asset: guilds_button_locked, fit: native }
+    label: { text: { en: "<gray>Offer", fr: "<gray>Proposer" }, offset_x: 4, offset_y: 1 }
+    title:
+      en: "<red>You cannot manage the alliances"
+      fr: "<red>Vous ne pouvez pas gérer les alliances"
+    lore:
+      en:
+        - "<gray>Ask your guild's owner for the permission."
+      fr:
+        - "<gray>Demandez la permission au chef de votre guilde."
+  - id: close
+    positions: "53"
+    image: { asset: guilds_close, fit: native }
+    title:
+      en: "<red>Close"
+      fr: "<red>Fermer"
+    click:
+      left:
+        - close_menu

@@ -3,7 +3,8 @@ schema: menu/v1
 # menus/main.yaml drawn with images. Same inputs, same data, same clicks; only the look changes.
 # The window is the image guilds_main_background (vanilla_texture: false). The menu's name and the
 # guild's are title texts, centred; each entry is a card over 3x2 slots, its name the card's label
-# (the dark grey of a window's title).
+# (the dark grey of a window's title). The bottom row: the bank and the members in boxes, the chat
+# mode.
 # The images are drawn by tools/textured/generate.py.
 title:
   - kind: background
@@ -39,14 +40,15 @@ elements:
     title: "<gold><bold>{info[0].name}"
     lore:
       en:
-        - "<gray>Level: <white>{info[0].level}<gray>/{info[0].max_level}"
+        # No level line on a server with a single level.
+        - '{info[0].max_level > 1 ? "<gray>Level: <white>" + info[0].level + "<gray>/" + info[0].max_level : ""}'
         - "<gray>Members: <white>{info[0].members}<gray>/{info[0].max_members} <dark_gray>({info[0].online} online)"
         - "<gray>Bank: <white>{info[0].balance}"
         - "<gray>Founder: <white>{info[0].owner}"
         - "<gray>Your rank: {info[0].rank}"
         - "<gray>Created: <white>{info[0].created}"
       fr:
-        - "<gray>Niveau : <white>{info[0].level}<gray>/{info[0].max_level}"
+        - '{info[0].max_level > 1 ? "<gray>Niveau : <white>" + info[0].level + "<gray>/" + info[0].max_level : ""}'
         - "<gray>Membres : <white>{info[0].members}<gray>/{info[0].max_members} <dark_gray>({info[0].online} en ligne)"
         - "<gray>Banque : <white>{info[0].balance}"
         - "<gray>Fondateur : <white>{info[0].owner}"
@@ -84,8 +86,44 @@ elements:
     click:
       left:
         - module_command: { command: "guilds:guild.ranks" }
-  - id: chest
+  - id: alliances
     positions: "15-17,24-26"
+    states:
+      # Offers to answer: the card wears a red badge (a state replaces the whole display).
+      - if:
+          - expression: info[0].alliance_offers > 0
+        image: { asset: guilds_card_alliances_offer, fit: native }
+        label: { text: { en: "<#404040>Alliances", fr: "<#404040>Alliances" }, offset_y: 8 }
+        title:
+          en: "<yellow>Alliances"
+          fr: "<yellow>Alliances"
+        lore:
+          en:
+            - "<gray>Allies: <white>{info[0].allies}"
+            - '{info[0].alliance_offers > 0 ? "<gold>" + info[0].alliance_offers + " alliance offer(s) to answer" : ""}'
+          fr:
+            - "<gray>Alliés : <white>{info[0].allies}"
+            - '{info[0].alliance_offers > 0 ? "<gold>" + info[0].alliance_offers + " alliance(s) proposée(s), à étudier" : ""}'
+        click:
+          left:
+            - module_command: { command: "guilds:guild.alliance" }
+    image: { asset: guilds_card_alliances, fit: native }
+    label: { text: { en: "<#404040>Alliances", fr: "<#404040>Alliances" }, offset_y: 8 }
+    title:
+      en: "<yellow>Alliances"
+      fr: "<yellow>Alliances"
+    lore:
+      en:
+        - "<gray>Allies: <white>{info[0].allies}"
+        - '{info[0].alliance_offers > 0 ? "<gold>" + info[0].alliance_offers + " alliance offer(s) to answer" : ""}'
+      fr:
+        - "<gray>Alliés : <white>{info[0].allies}"
+        - '{info[0].alliance_offers > 0 ? "<gold>" + info[0].alliance_offers + " alliance(s) proposée(s), à étudier" : ""}'
+    click:
+      left:
+        - module_command: { command: "guilds:guild.alliance" }
+  - id: chest
+    positions: "27-29,36-38"
     image: { asset: guilds_card_chest, fit: native }
     label: { text: { en: "<#404040>Chest", fr: "<#404040>Coffre" }, offset_y: 8 }
     title:
@@ -99,24 +137,6 @@ elements:
     click:
       left:
         - module_command: { command: "guilds:guild.chest" }
-  - id: bank
-    positions: "27-29,36-38"
-    image: { asset: guilds_card_bank, fit: native }
-    label: { text: { en: "<#404040>Bank", fr: "<#404040>Banque" }, offset_y: 8 }
-    title:
-      en: "<yellow>Bank"
-      fr: "<yellow>Banque"
-    lore:
-      en:
-        - "<gray>Balance: <white>{info[0].balance}"
-        - ""
-        - "<gray>/g bank deposit <amount>"
-        - "<gray>/g bank withdraw <amount>"
-      fr:
-        - "<gray>Solde : <white>{info[0].balance}"
-        - ""
-        - "<gray>/g bank deposit <montant>"
-        - "<gray>/g bank withdraw <montant>"
   - id: home
     positions: "30-32,39-41"
     image: { asset: guilds_card_home, fit: native }
@@ -150,21 +170,93 @@ elements:
       left:
         - close_menu
         - module_command: { command: "guilds:guild.logs" }
-  # The box at the bottom left: the star box is the image, the level its label (right of the star).
-  - id: level
+  # The bottom row: the bank and the members in boxes (their value is the label), the chat mode.
+  - id: bank
     positions: "45-47"
-    image: { asset: guilds_level, fit: native }
-    label: { text: "<yellow>{info[0].level}<gray>/{info[0].max_level}", offset_x: 4 }
+    image: { asset: guilds_balance, fit: native }
+    label: { text: "<gold>{info[0].balance}", offset_x: 5 }
     title:
-      en: "<yellow>Level <white>{info[0].level}<gray>/{info[0].max_level}"
-      fr: "<yellow>Niveau <white>{info[0].level}<gray>/{info[0].max_level}"
+      en: "<yellow>Bank: <white>{info[0].balance}"
+      fr: "<yellow>Banque : <white>{info[0].balance}"
     lore:
       en:
-        - "<gray>Members: <white>{info[0].members}<gray>/{info[0].max_members}"
-        - "<gray>Chest: <white>{info[0].chest_pages} <gray>pages"
+        - "<gray>/g bank deposit <amount>"
+        - "<gray>/g bank withdraw <amount>"
       fr:
-        - "<gray>Membres : <white>{info[0].members}<gray>/{info[0].max_members}"
-        - "<gray>Coffre : <white>{info[0].chest_pages} <gray>pages"
+        - "<gray>/g bank deposit <montant>"
+        - "<gray>/g bank withdraw <montant>"
+  - id: member_count
+    positions: "48-50"
+    image: { asset: guilds_members_count, fit: native }
+    label: { text: "<white>{info[0].members}<gray>/{info[0].max_members}", offset_x: 5 }
+    title:
+      en: "<yellow>Members: <white>{info[0].members}<gray>/{info[0].max_members}"
+      fr: "<yellow>Membres : <white>{info[0].members}<gray>/{info[0].max_members}"
+    lore:
+      en:
+        - "<gray>{info[0].online} online"
+      fr:
+        - "<gray>{info[0].online} en ligne"
+  # Where the viewer's chat lines go, by the bubble's colour (white, green, blue); a click moves to
+  # the next mode (/guild chat).
+  - id: chat
+    positions: "51-52"
+    states:
+      - if:
+          - placeholder_equals: { placeholder: "{info[0].chat}", value: "guild" }
+        image: { asset: guilds_chat_guild, fit: native }
+        title:
+          en: "<yellow>Chat: <green>guild"
+          fr: "<yellow>Chat : <green>guilde"
+        lore:
+          en:
+            - "<gray>Your messages go to your guild only."
+            - ""
+            - "<green>Click: alliance chat"
+          fr:
+            - "<gray>Tes messages ne vont qu'à ta guilde."
+            - ""
+            - "<green>Clic : chat d'alliance"
+        click:
+          left:
+            - module_command: { command: "guilds:guild.chat" }
+            - set_arg: { arg: refresh, value: "{info[0].chat}" }
+      - if:
+          - placeholder_equals: { placeholder: "{info[0].chat}", value: "ally" }
+        image: { asset: guilds_chat_ally, fit: native }
+        title:
+          en: "<yellow>Chat: <aqua>alliance"
+          fr: "<yellow>Chat : <aqua>alliance"
+        lore:
+          en:
+            - "<gray>Your messages go to your guild and its allies."
+            - ""
+            - "<green>Click: public chat"
+          fr:
+            - "<gray>Tes messages vont à ta guilde et à ses alliés."
+            - ""
+            - "<green>Clic : chat public"
+        click:
+          left:
+            - module_command: { command: "guilds:guild.chat" }
+            - set_arg: { arg: refresh, value: "{info[0].chat}" }
+    image: { asset: guilds_chat_public, fit: native }
+    title:
+      en: "<yellow>Chat: <white>public"
+      fr: "<yellow>Chat : <white>public"
+    lore:
+      en:
+        - "<gray>Your messages go to everyone."
+        - ""
+        - "<green>Click: guild chat"
+      fr:
+        - "<gray>Tes messages vont à tout le monde."
+        - ""
+        - "<green>Clic : chat de guilde"
+    click:
+      left:
+        - module_command: { command: "guilds:guild.chat" }
+        - set_arg: { arg: refresh, value: "{info[0].chat}" }
   - id: close
     positions: "53"
     image: { asset: guilds_close, fit: native }

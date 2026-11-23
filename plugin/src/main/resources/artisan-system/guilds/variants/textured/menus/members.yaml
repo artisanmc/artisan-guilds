@@ -81,8 +81,9 @@ elements:
       left:
         - pagination_next: list
   - id: back
-    positions: "45"
-    image: { asset: guilds_back, fit: native }
+    positions: "45-47"
+    image: { asset: guilds_button_back, fit: native }
+    label: { text: { en: "<white>Back", fr: "<white>Retour" }, offset_x: 4, offset_y: 1 }
     title:
       en: "<gray>Back"
       fr: "<gray>Retour"

@@ -110,6 +110,7 @@ class GuildCommandsTest {
     @Test
     void ranksAndDisbandOpenTheModuleMenusAndDisbandConfirmRunsIt() {
         assertEquals(GuildCommands.RANKS_MENU, find(root, "guilds:guild.ranks").getOpensMenu());
+        assertEquals(GuildCommands.ALLIANCES_MENU, find(root, "guilds:guild.alliance").getOpensMenu());
         assertEquals(GuildCommands.DISBAND_MENU, find(root, "guilds:guild.disband").getOpensMenu());
         GuildData guild = guild();
 

@@ -185,27 +185,6 @@ def icon_chest():
         "g": (210, 210, 210, 255), "G": (110, 110, 110, 255)})
 
 
-def icon_bank():  # a stack of gold coins
-    return sprite([
-        "................",
-        "................",
-        "........dddd....",
-        ".......dHGGGd...",
-        ".......dGGGGd...",
-        "....dddddddd....",
-        "...dHGGGGGGGd...",
-        "...ddddddddddd..",
-        "...dHGGGGGGGGd..",
-        "..dddddddddddd..",
-        "..dHGGGGGGGGd...",
-        "..dddddddddddd..",
-        "..dHGGGGGGGGGd..",
-        "..dGGGGGGGGGGd..",
-        "...dddddddddd...",
-        "................",
-    ], {"d": GOLD_D, "G": GOLD, "H": GOLD_H})
-
-
 def icon_home():  # a house
     return sprite([
         "................",
@@ -250,19 +229,6 @@ def icon_logs():  # a book and its quill
         "f": (220, 220, 220, 255), "F": (255, 255, 255, 255), "q": (60, 60, 60, 255)})
 
 
-def icon_star():
-    return sprite([
-        "........",
-        "...dd...",
-        "...HG...",
-        "dHHGGGGd",
-        ".dGGGGd.",
-        "..GGGG..",
-        ".GGddGG.",
-        ".Gd..dG.",
-    ], {"d": GOLD_D, "G": GOLD, "H": GOLD_H})
-
-
 def icon_lock():
     return sprite([
         "..oooo..",
@@ -274,6 +240,70 @@ def icon_lock():
         "oGGddGGo",
         "oooooooo",
     ], {"o": (60, 60, 60, 255), "G": (170, 170, 170, 255), "d": (60, 60, 60, 255)})
+
+
+def icon_alliances():  # two shields side by side, each with a white band
+    return sprite([
+        "................",
+        "................",
+        ".ooooooo.ooooooo",
+        ".oGGGGGo.oBBBBBo",
+        ".oGGGGGo.oBBBBBo",
+        ".oWWWWWo.oWWWWWo",
+        ".oGGGGGo.oBBBBBo",
+        ".oGGGGGo.oBBBBBo",
+        ".oGGGGGo.oBBBBBo",
+        "..oGGGo...oBBBo.",
+        "...oGo.....oBo..",
+        "....o.......o...",
+        "................",
+        "................",
+        "................",
+        "................",
+    ], {"o": (40, 40, 40, 255), "G": (70, 150, 60, 255), "B": (60, 110, 200, 255), "W": (236, 236, 236, 255)})
+
+
+def icon_coin():  # 8x8
+    return sprite([
+        "..dddd..",
+        ".dHGGGd.",
+        "dHGddGGd",
+        "dGGdGGGd",
+        "dGGdGGGd",
+        "dGGddGGd",
+        ".dGGGGd.",
+        "..dddd..",
+    ], {"d": GOLD_D, "G": GOLD, "H": GOLD_H})
+
+
+def icon_heads():  # 8x8: two small heads
+    return sprite([
+        "....kkkk",
+        "hhhhkSSk",
+        "hsssSSSk",
+        "hese.SS.",
+        "hsss.cc.",
+        ".ss.cccc",
+        "tttttccc",
+        "tttttccc",
+    ], {"h": (74, 52, 34, 255), "s": (228, 178, 140, 255), "e": (60, 60, 120, 255), "t": (60, 150, 170, 255),
+        "k": (40, 34, 30, 255), "S": (170, 122, 90, 255), "c": (60, 80, 150, 255)})
+
+
+def icon_bubble(color):  # 10x9 chat bubble
+    c = color
+    d = tuple(max(0, v - 70) for v in c[:3]) + (255,)
+    return sprite([
+        ".oooooooo.",
+        "occcccccco",
+        "occwcwcwco",
+        "occcccccco",
+        ".oooooooo.",
+        "..oco.....",
+        "..oo......",
+        "..........",
+        "..........",
+    ], {"o": d, "c": c, "w": VHI})
 
 
 # ------------------------------------------------------------------ buttons
@@ -396,16 +426,98 @@ def close():
     return t
 
 
-def back():  # back to the menu before: a small gold arrow pointing left
-    return arrow(True, True, 16, 16)
+def box(w, icon):
+    """A vanilla text box (w x 16) with its icon on the left; the value is the element's label."""
+    t = Image.new("RGBA", (w, 16), CLEAR)
+    rect(t, 0, 0, w - 1, 15, (160, 160, 160, 255))
+    rect(t, 1, 1, w - 2, 14, OUTLINE)
+    t.alpha_composite(icon, (4, 4))
+    return t
 
 
-def level_box():
-    """The level box over slots 45-47 (54x16): a vanilla text box with a star. The level is its label."""
-    t = Image.new("RGBA", (54, 16), CLEAR)
-    rect(t, 0, 0, 53, 15, (160, 160, 160, 255))
-    rect(t, 1, 1, 52, 14, OUTLINE)
-    t.alpha_composite(icon_star(), (4, 4))
+def with_icon(t, icon, x):
+    t = t.copy()
+    t.alpha_composite(icon, (x, (t.height - icon.height) // 2))
+    return t
+
+
+def back_button():
+    """Back to the menu before over 3 slots: a vanilla button with a gold arrow; "Back" is its label."""
+    t = button("plain")
+    a = sprite([
+        "...o",
+        "..oG",
+        ".oGG",
+        "oGGG",
+        ".oGG",
+        "..oG",
+        "...o",
+    ], {"o": OUTLINE, "G": GOLD})
+    return with_icon(t, a, 5)
+
+
+def chat_button(mode):
+    """The chat mode over 2 slots (36x18): a vanilla button with a bubble in the mode's colour, the mode
+    itself on hover."""
+    color = {"public": (236, 236, 236, 255), "guild": (90, 210, 80, 255), "ally": (90, 200, 230, 255)}[mode]
+    t = Image.new("RGBA", (36, 18), CLEAR)
+    t.alpha_composite(button("plain").crop((0, 0, 18, 18)), (0, 0))
+    t.alpha_composite(button("plain").crop((36, 0, 54, 18)), (18, 0))
+    bubble = icon_bubble(color)
+    t.alpha_composite(bubble, ((36 - bubble.width) // 2, 5))
+    return t
+
+
+def alliance_tile(state):
+    """An allied guild (green, its shield), an offer to answer (gold, a letter), an offer sent (grey, an hourglass)."""
+    if state == "ally":
+        t = tile((176, 200, 140, 255), (88, 112, 64, 255), (214, 230, 186, 255), (130, 156, 100, 255))
+        mark = sprite([
+            "oooooooo",
+            "oGGGGGGo",
+            "oWWWWWWo",
+            "oGGGGGGo",
+            "oGGGGGGo",
+            ".oGGGGo.",
+            "..oGGo..",
+            "...oo...",
+        ], {"o": (40, 70, 30, 255), "G": (70, 150, 60, 255), "W": (236, 236, 236, 255)})
+    elif state == "offer":
+        t = tile((255, 222, 110, 255), GOLD_D, GOLD_H, (214, 150, 40, 255))
+        mark = sprite([
+            "oooooooo",
+            "oWoWWoWo",
+            "oWWooWWo",
+            "oWWWWWWo",
+            "oWWWWWWo",
+            "oooooooo",
+            "........",
+            "........",
+        ], {"o": (120, 80, 20, 255), "W": (255, 250, 236, 255)})
+    else:
+        t = tile((150, 150, 150, 255), (80, 80, 80, 255), (184, 184, 184, 255), (118, 118, 118, 255))
+        mark = sprite([
+            "oooooo..",
+            ".oSSo...",
+            "..oo....",
+            "..oo....",
+            ".oSSo...",
+            "oSSSSo..",
+            "oooooo..",
+            "........",
+        ], {"o": (70, 70, 70, 255), "S": (226, 196, 120, 255)})
+    t.alpha_composite(mark, (4, 4))
+    return t
+
+
+def card_badge(base):
+    """A card with a gold "!" badge in its top right corner: something waits there."""
+    t = base.copy()
+    d = ImageDraw.Draw(t)
+    d.rectangle([42, 4, 48, 14], fill=OUTLINE)
+    d.rectangle([43, 5, 47, 13], fill=(220, 50, 44, 255))
+    d.rectangle([45, 6, 45, 10], fill=VHI)
+    d.rectangle([45, 12, 45, 12], fill=VHI)
     return t
 
 
@@ -422,25 +534,33 @@ GLYPHS = {
 IMAGES = {
     "guilds_card_members": card(icon_members()),
     "guilds_card_ranks": card(icon_ranks()),
+    "guilds_card_alliances": card(icon_alliances()),
+    "guilds_card_alliances_offer": card_badge(card(icon_alliances())),
     "guilds_card_chest": card(icon_chest()),
-    "guilds_card_bank": card(icon_bank()),
     "guilds_card_home": card(icon_home()),
     "guilds_card_logs": card(icon_logs()),
-    "guilds_level": level_box(),
+    "guilds_balance": box(54, icon_coin()),
+    "guilds_members_count": box(54, icon_heads()),
+    "guilds_chat_public": chat_button("public"),
+    "guilds_chat_guild": chat_button("guild"),
+    "guilds_chat_ally": chat_button("ally"),
     "guilds_button": button("green"),
     "guilds_button_danger": button("red"),
     "guilds_button_plain": button("plain"),
     "guilds_button_locked": button_locked(),
+    "guilds_button_back": back_button(),
     "guilds_rank_top": rank_tile("top"),
     "guilds_rank": rank_tile("middle"),
     "guilds_rank_bottom": rank_tile("bottom"),
     "guilds_permission_on": perm_on(),
     "guilds_permission_off": perm_off(),
+    "guilds_alliance": alliance_tile("ally"),
+    "guilds_alliance_offer": alliance_tile("offer"),
+    "guilds_alliance_sent": alliance_tile("sent"),
     "guilds_prev": arrow(True, True),
     "guilds_prev_off": arrow(True, False),
     "guilds_next": arrow(False, True),
     "guilds_next_off": arrow(False, False),
-    "guilds_back": back(),
     "guilds_close": close(),
 }
 

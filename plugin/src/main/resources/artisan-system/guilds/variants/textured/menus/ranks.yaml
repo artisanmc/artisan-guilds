@@ -28,15 +28,74 @@ elements:
   - id: ranks
     positions: "10-16,19-25,28-34,37-43"
     iterates: { source: ranks, alias: r }
+    # A state replaces the whole display: each one repeats the rank's title, lore and clicks.
     states:
       - if:
           - expression: r.top
         image: { asset: guilds_rank_top, fit: native }
         material: GOLDEN_HELMET
+        title: "{r.name}"
+        lore:
+          en:
+            - "<gray>Members: <white>{r.members}"
+            - ""
+            - "<aqua>[Left click] <white>manage the permissions"
+            - "<aqua>[Right click] <white>delete the rank"
+            - ""
+            - "<aqua>[Shift + left click] <white>move down"
+            - "<aqua>[Shift + right click] <white>move up"
+          fr:
+            - "<gray>Membres : <white>{r.members}"
+            - ""
+            - "<aqua>[Clic gauche] <white>gérer les permissions"
+            - "<aqua>[Clic droit] <white>supprimer le grade"
+            - ""
+            - "<aqua>[Shift + clic gauche] <white>déplacer vers le bas"
+            - "<aqua>[Shift + clic droit] <white>déplacer vers le haut"
+        click:
+          left:
+            - open_menu: { menu_id: rank_permissions, context: { rank: "{r.id}" } }
+          right:
+            - open_menu: { menu_id: rank_delete_confirm, context: { rank: "{r.id}" } }
+          shift_left:
+            - guilds:rank_move: { rank: "{r.id}", direction: down }
+            - set_arg: { arg: refresh, value: "{r.id}" }
+          shift_right:
+            - guilds:rank_move: { rank: "{r.id}", direction: up }
+            - set_arg: { arg: refresh, value: "{r.id}" }
       - if:
           - expression: r.bottom
         image: { asset: guilds_rank_bottom, fit: native }
         material: LEATHER_HELMET
+        title: "{r.name}"
+        lore:
+          en:
+            - "<gray>Members: <white>{r.members}"
+            - ""
+            - "<aqua>[Left click] <white>manage the permissions"
+            - "<aqua>[Right click] <white>delete the rank"
+            - ""
+            - "<aqua>[Shift + left click] <white>move down"
+            - "<aqua>[Shift + right click] <white>move up"
+          fr:
+            - "<gray>Membres : <white>{r.members}"
+            - ""
+            - "<aqua>[Clic gauche] <white>gérer les permissions"
+            - "<aqua>[Clic droit] <white>supprimer le grade"
+            - ""
+            - "<aqua>[Shift + clic gauche] <white>déplacer vers le bas"
+            - "<aqua>[Shift + clic droit] <white>déplacer vers le haut"
+        click:
+          left:
+            - open_menu: { menu_id: rank_permissions, context: { rank: "{r.id}" } }
+          right:
+            - open_menu: { menu_id: rank_delete_confirm, context: { rank: "{r.id}" } }
+          shift_left:
+            - guilds:rank_move: { rank: "{r.id}", direction: down }
+            - set_arg: { arg: refresh, value: "{r.id}" }
+          shift_right:
+            - guilds:rank_move: { rank: "{r.id}", direction: up }
+            - set_arg: { arg: refresh, value: "{r.id}" }
     # Each state also names a material: what a rank shows while its image is not in the pack yet.
     image: { asset: guilds_rank, fit: native }
     material: IRON_HELMET
@@ -97,6 +156,16 @@ elements:
     click:
       left:
         - pagination_next: ranks
+  - id: back
+    positions: "45-47"
+    image: { asset: guilds_button_back, fit: native }
+    label: { text: { en: "<white>Back", fr: "<white>Retour" }, offset_x: 4, offset_y: 1 }
+    title:
+      en: "<gray>Back"
+      fr: "<gray>Retour"
+    click:
+      left:
+        - open_previous_menu
   # Add a rank; without the right to manage the ranks, the same button greyed with a lock says why
   # (the default menu's barrier).
   - id: add_rank

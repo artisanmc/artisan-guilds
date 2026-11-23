@@ -1,0 +1,25 @@
+schema: dialog/v1
+title:
+  en: "Offer an alliance"
+  fr: "Proposer une alliance"
+inputs:
+  - id: guild
+    type: text
+    label:
+      en: "Name of the guild"
+      fr: "Nom de la guilde"
+    max_length: 64
+buttons:
+  - id: offer
+    label:
+      en: "Offer"
+      fr: "Proposer"
+    actions:
+      - module_command: { command: "guilds:guild.alliance.invite", args: { guild: "{guild}" } }
+      - open_previous_menu
+  - id: cancel
+    label:
+      en: "Cancel"
+      fr: "Annuler"
+    actions:
+      - open_previous_menu

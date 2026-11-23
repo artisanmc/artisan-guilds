@@ -30,10 +30,26 @@ elements:
           - expression: r.top
         image: { asset: guilds_rank_top, fit: native }
         material: GOLDEN_HELMET
+        title: "{r.name}"
+        lore:
+          en:
+            - "<gray>Members: <white>{r.members}"
+            - "<gray>Only a rank without members can be deleted."
+          fr:
+            - "<gray>Membres : <white>{r.members}"
+            - "<gray>Seul un grade sans membre peut être supprimé."
       - if:
           - expression: r.bottom
         image: { asset: guilds_rank_bottom, fit: native }
         material: LEATHER_HELMET
+        title: "{r.name}"
+        lore:
+          en:
+            - "<gray>Members: <white>{r.members}"
+            - "<gray>Only a rank without members can be deleted."
+          fr:
+            - "<gray>Membres : <white>{r.members}"
+            - "<gray>Seul un grade sans membre peut être supprimé."
     image: { asset: guilds_rank, fit: native }
     material: IRON_HELMET
     title: "{r.name}"
