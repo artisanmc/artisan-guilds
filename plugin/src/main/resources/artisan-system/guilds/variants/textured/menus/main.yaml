@@ -204,7 +204,7 @@ elements:
     positions: "42-44"
     states:
       - if:
-          - placeholder_equals: { placeholder: "{info[0].chat}", value: "guild" }
+          - expression: 'info[0].chat == "guild"'
         image: { asset: guilds_chat_guild, fit: native }
         label: { text: { en: "<#404040>Guild", fr: "<#404040>Guilde" }, offset_x: 8 }
         title:
@@ -224,7 +224,7 @@ elements:
             - module_command: { command: "guilds:guild.chat" }
             - set_arg: { arg: refresh, value: "{info[0].chat}" }
       - if:
-          - placeholder_equals: { placeholder: "{info[0].chat}", value: "ally" }
+          - expression: 'info[0].chat == "ally"'
         image: { asset: guilds_chat_ally, fit: native }
         label: { text: { en: "<#404040>Allies", fr: "<#404040>Alliés" }, offset_x: 8 }
         title:

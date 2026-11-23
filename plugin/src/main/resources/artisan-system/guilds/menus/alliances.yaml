@@ -33,7 +33,7 @@ elements:
         - "<gray>Membres : <white>{a.members} <dark_gray>({a.online} en ligne)"
     states:
       - if:
-          - placeholder_equals: { placeholder: "{a.state}", value: "ally" }
+          - expression: 'a.state == "ally"'
         material: LIME_BANNER
         title: "<white>{a.name}"
         lore:
@@ -52,7 +52,7 @@ elements:
               do:
                 - open_menu: { menu_id: alliance_end_confirm, context: { ally: "{a.id}" } }
       - if:
-          - placeholder_equals: { placeholder: "{a.state}", value: "offer" }
+          - expression: 'a.state == "offer"'
         material: YELLOW_BANNER
         title: "<white>{a.name}"
         lore:
@@ -123,7 +123,7 @@ elements:
         - "<gray>Demandez la permission au chef de votre guilde."
     states:
       - if:
-          - placeholder_equals: { placeholder: "{v.can_manage_alliances}", value: "true" }
+          - expression: 'v.can_manage_alliances == "true"'
         material: EMERALD
         title:
           en: "<dark_green><bold>Offer an alliance"

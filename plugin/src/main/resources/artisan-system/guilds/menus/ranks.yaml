@@ -95,7 +95,7 @@ elements:
     title: " "
     states:
       - if:
-          - placeholder_equals: { placeholder: "{v.can_manage_ranks}", value: "false" }
+          - expression: 'v.can_manage_ranks == "false"'
         material: BARRIER
         title:
           en: "<red>You cannot manage the ranks"
@@ -117,6 +117,6 @@ elements:
         - open_dialog: rank_create
     states:
       - if:
-          - placeholder_equals: { placeholder: "{v.can_manage_ranks}", value: "false" }
+          - expression: 'v.can_manage_ranks == "false"'
         material: WHITE_STAINED_GLASS_PANE
         title: " "

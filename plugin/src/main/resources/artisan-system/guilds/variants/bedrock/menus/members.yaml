@@ -43,7 +43,7 @@ elements:
             - set_arg: {arg: refresh, value: "1"}
     states:
       - if:
-          - placeholder_equals: {placeholder: "{mode}", value: "demote"}
+          - expression: 'mode == "demote"'
         material: PLAYER_HEAD
         head: "playerhead:{m.name}"
         title: "<white>{m.name}"
@@ -66,7 +66,7 @@ elements:
                 - module_command: {command: "guilds:guild.demote", args: {member: "{m.name}"}}
                 - set_arg: {arg: refresh, value: "1"}
       - if:
-          - placeholder_equals: {placeholder: "{mode}", value: "kick"}
+          - expression: 'mode == "kick"'
         material: PLAYER_HEAD
         head: "playerhead:{m.name}"
         title: "<white>{m.name}"
@@ -103,7 +103,7 @@ elements:
         - set_arg_cycle_next: {arg: mode, list: "demote,kick,promote"}
     states:
       - if:
-          - placeholder_equals: {placeholder: "{mode}", value: "demote"}
+          - expression: 'mode == "demote"'
         material: ORANGE_DYE
         title:
           en: "<yellow>A tap: <white>demote"
@@ -117,7 +117,7 @@ elements:
           left:
             - set_arg_cycle_next: {arg: mode, list: "demote,kick,promote"}
       - if:
-          - placeholder_equals: {placeholder: "{mode}", value: "kick"}
+          - expression: 'mode == "kick"'
         material: RED_DYE
         title:
           en: "<yellow>A tap: <white>kick"
