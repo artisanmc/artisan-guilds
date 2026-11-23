@@ -1,0 +1,176 @@
+schema: menu/v1
+# The guild menu (/guild) for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/main.yaml drawn with images. Same inputs, same data, same clicks; only the look changes.
+# The window is the image guilds_main_background (vanilla_texture: false). The menu's name and the
+# guild's are title texts, centred; each entry is a card over 3x2 slots, its name the card's label
+# (the dark grey of a window's title).
+# The images are drawn by tools/textured/generate.py.
+title:
+  - kind: background
+    asset_id: guilds_main_background
+  - kind: textarea
+    value: { en: "Guild", fr: "Guilde" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+  - kind: textarea
+    value: "{info[0].name}"
+    x: 88
+    y: 20
+    width: 168
+    line_height: 14
+    alignment: center
+    size: 12
+size: 54
+vanilla_texture: false
+inputs:
+  # One row: the viewer's guild. Not named "guild": the commands below take an argument of
+  # that name, which module_command would fill from it.
+  - name: info
+    type: list
+    source: { ref: "guilds:guild" }
+elements:
+  # The guild's name at the top is a title text: this element (no image, no item) is an invisible
+  # area under it that shows the guild on hover.
+  - id: guild
+    positions: "1-7"
+    title: "<gold><bold>{info[0].name}"
+    lore:
+      en:
+        - "<gray>Level: <white>{info[0].level}<gray>/{info[0].max_level}"
+        - "<gray>Members: <white>{info[0].members}<gray>/{info[0].max_members} <dark_gray>({info[0].online} online)"
+        - "<gray>Bank: <white>{info[0].balance}"
+        - "<gray>Founder: <white>{info[0].owner}"
+        - "<gray>Your rank: {info[0].rank}"
+        - "<gray>Created: <white>{info[0].created}"
+      fr:
+        - "<gray>Niveau : <white>{info[0].level}<gray>/{info[0].max_level}"
+        - "<gray>Membres : <white>{info[0].members}<gray>/{info[0].max_members} <dark_gray>({info[0].online} en ligne)"
+        - "<gray>Banque : <white>{info[0].balance}"
+        - "<gray>Fondateur : <white>{info[0].owner}"
+        - "<gray>Ton grade : {info[0].rank}"
+        - "<gray>Créée le : <white>{info[0].created}"
+  - id: members
+    positions: "9-11,18-20"
+    image: { asset: guilds_card_members, fit: native }
+    label: { text: { en: "<#404040>Members", fr: "<#404040>Membres" }, offset_y: 8 }
+    title:
+      en: "<yellow>Members"
+      fr: "<yellow>Membres"
+    lore:
+      en:
+        - "<gray>See the members, promote,"
+        - "<gray>demote or kick them."
+      fr:
+        - "<gray>Voir les membres, les promouvoir,"
+        - "<gray>les rétrograder ou les exclure."
+    click:
+      left:
+        - module_command: { command: "guilds:guild.members" }
+  - id: ranks
+    positions: "12-14,21-23"
+    image: { asset: guilds_card_ranks, fit: native }
+    label: { text: { en: "<#404040>Ranks", fr: "<#404040>Grades" }, offset_y: 8 }
+    title:
+      en: "<yellow>Ranks"
+      fr: "<yellow>Grades"
+    lore:
+      en:
+        - "<gray>The guild's ranks and permissions."
+      fr:
+        - "<gray>Grades et permissions de la guilde."
+    click:
+      left:
+        - module_command: { command: "guilds:guild.ranks" }
+  - id: chest
+    positions: "15-17,24-26"
+    image: { asset: guilds_card_chest, fit: native }
+    label: { text: { en: "<#404040>Chest", fr: "<#404040>Coffre" }, offset_y: 8 }
+    title:
+      en: "<yellow>Guild chest"
+      fr: "<yellow>Coffre de guilde"
+    lore:
+      en:
+        - "<gray>Pages: <white>{info[0].chest_pages}"
+      fr:
+        - "<gray>Pages : <white>{info[0].chest_pages}"
+    click:
+      left:
+        - module_command: { command: "guilds:guild.chest" }
+  - id: bank
+    positions: "27-29,36-38"
+    image: { asset: guilds_card_bank, fit: native }
+    label: { text: { en: "<#404040>Bank", fr: "<#404040>Banque" }, offset_y: 8 }
+    title:
+      en: "<yellow>Bank"
+      fr: "<yellow>Banque"
+    lore:
+      en:
+        - "<gray>Balance: <white>{info[0].balance}"
+        - ""
+        - "<gray>/g bank deposit <amount>"
+        - "<gray>/g bank withdraw <amount>"
+      fr:
+        - "<gray>Solde : <white>{info[0].balance}"
+        - ""
+        - "<gray>/g bank deposit <montant>"
+        - "<gray>/g bank withdraw <montant>"
+  - id: home
+    positions: "30-32,39-41"
+    image: { asset: guilds_card_home, fit: native }
+    # "Home", in French too: "Résidence" is wider than the card.
+    label: { text: { en: "<#404040>Home", fr: "<#404040>Home" }, offset_y: 8 }
+    title:
+      en: "<yellow>Home"
+      fr: "<yellow>Résidence"
+    lore:
+      en:
+        - "<gray>Click: teleport there"
+      fr:
+        - "<gray>Clic : s'y téléporter"
+    click:
+      left:
+        - close_menu
+        - module_command: { command: "guilds:guild.home" }
+  - id: logs
+    positions: "33-35,42-44"
+    image: { asset: guilds_card_logs, fit: native }
+    label: { text: { en: "<#404040>Log", fr: "<#404040>Journal" }, offset_y: 8 }
+    title:
+      en: "<yellow>Log"
+      fr: "<yellow>Journal"
+    lore:
+      en:
+        - "<gray>The guild's latest actions."
+      fr:
+        - "<gray>Dernières actions de la guilde."
+    click:
+      left:
+        - close_menu
+        - module_command: { command: "guilds:guild.logs" }
+  # The box at the bottom left: the star box is the image, the level its label (right of the star).
+  - id: level
+    positions: "45-47"
+    image: { asset: guilds_level, fit: native }
+    label: { text: "<yellow>{info[0].level}<gray>/{info[0].max_level}", offset_x: 4 }
+    title:
+      en: "<yellow>Level <white>{info[0].level}<gray>/{info[0].max_level}"
+      fr: "<yellow>Niveau <white>{info[0].level}<gray>/{info[0].max_level}"
+    lore:
+      en:
+        - "<gray>Members: <white>{info[0].members}<gray>/{info[0].max_members}"
+        - "<gray>Chest: <white>{info[0].chest_pages} <gray>pages"
+      fr:
+        - "<gray>Membres : <white>{info[0].members}<gray>/{info[0].max_members}"
+        - "<gray>Coffre : <white>{info[0].chest_pages} <gray>pages"
+  - id: close
+    positions: "53"
+    image: { asset: guilds_close, fit: native }
+    title:
+      en: "<red>Close"
+      fr: "<red>Fermer"
+    click:
+      left:
+        - close_menu

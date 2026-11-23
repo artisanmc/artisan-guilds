@@ -60,7 +60,7 @@ public final class GuildsModule implements ArtisanModule {
 
     /** The shipped menus and dialogs: raise {@link #SYSTEM_VERSION} whenever one of them changes. */
     static final String SYSTEM = "guilds_menus";
-    static final int SYSTEM_VERSION = 6;
+    static final int SYSTEM_VERSION = 7;
     static final String SYSTEM_ROOT = "artisan-system/guilds";
     static final List<String> SYSTEM_FILES = List.of(
             "menus/main.yaml",
@@ -78,7 +78,65 @@ public final class GuildsModule implements ArtisanModule {
             "variants/bedrock/menus/members.yaml",
             "variants/bedrock/menus/rank_delete_confirm.yaml",
             "variants/bedrock/menus/rank_permissions.yaml",
-            "variants/bedrock/menus/ranks.yaml");
+            "variants/bedrock/menus/ranks.yaml",
+            // Version 7: the 'textured' versions of every menu, for Java players who loaded the resource
+            // pack, and their images (drawn by tools/textured/generate.py).
+            "variants/textured/menus/main.yaml",
+            "variants/textured/menus/members.yaml",
+            "variants/textured/menus/ranks.yaml",
+            "variants/textured/menus/rank_permissions.yaml",
+            "variants/textured/menus/rank_delete_confirm.yaml",
+            "variants/textured/menus/disband_confirm.yaml",
+            "assets/glyphs/guilds_confirm_background.png",
+            "assets/glyphs/guilds_confirm_background.yml",
+            "assets/glyphs/guilds_list_background.png",
+            "assets/glyphs/guilds_list_background.yml",
+            "assets/glyphs/guilds_main_background.png",
+            "assets/glyphs/guilds_main_background.yml",
+            "assets/textures/guilds_back.png",
+            "assets/textures/guilds_back.yml",
+            "assets/textures/guilds_button.png",
+            "assets/textures/guilds_button.yml",
+            "assets/textures/guilds_button_danger.png",
+            "assets/textures/guilds_button_danger.yml",
+            "assets/textures/guilds_button_locked.png",
+            "assets/textures/guilds_button_locked.yml",
+            "assets/textures/guilds_button_plain.png",
+            "assets/textures/guilds_button_plain.yml",
+            "assets/textures/guilds_card_bank.png",
+            "assets/textures/guilds_card_bank.yml",
+            "assets/textures/guilds_card_chest.png",
+            "assets/textures/guilds_card_chest.yml",
+            "assets/textures/guilds_card_home.png",
+            "assets/textures/guilds_card_home.yml",
+            "assets/textures/guilds_card_logs.png",
+            "assets/textures/guilds_card_logs.yml",
+            "assets/textures/guilds_card_members.png",
+            "assets/textures/guilds_card_members.yml",
+            "assets/textures/guilds_card_ranks.png",
+            "assets/textures/guilds_card_ranks.yml",
+            "assets/textures/guilds_close.png",
+            "assets/textures/guilds_close.yml",
+            "assets/textures/guilds_level.png",
+            "assets/textures/guilds_level.yml",
+            "assets/textures/guilds_next.png",
+            "assets/textures/guilds_next.yml",
+            "assets/textures/guilds_next_off.png",
+            "assets/textures/guilds_next_off.yml",
+            "assets/textures/guilds_permission_off.png",
+            "assets/textures/guilds_permission_off.yml",
+            "assets/textures/guilds_permission_on.png",
+            "assets/textures/guilds_permission_on.yml",
+            "assets/textures/guilds_prev.png",
+            "assets/textures/guilds_prev.yml",
+            "assets/textures/guilds_prev_off.png",
+            "assets/textures/guilds_prev_off.yml",
+            "assets/textures/guilds_rank.png",
+            "assets/textures/guilds_rank.yml",
+            "assets/textures/guilds_rank_bottom.png",
+            "assets/textures/guilds_rank_bottom.yml",
+            "assets/textures/guilds_rank_top.png",
+            "assets/textures/guilds_rank_top.yml");
 
     public static final String VIEWER = "guilds:viewer";
     public static final String GUILD = "guilds:guild";

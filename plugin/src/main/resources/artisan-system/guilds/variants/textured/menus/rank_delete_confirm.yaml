@@ -1,0 +1,67 @@
+schema: menu/v1
+# Deleting a rank, for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/rank_delete_confirm.yaml drawn with images. Same inputs, same clicks. The window is the image
+# guilds_confirm_background (vanilla_texture: false): the rank's plate in the middle slot, then the
+# two buttons, red for what cannot be undone, a vanilla one to cancel.
+title:
+  - kind: background
+    asset_id: guilds_confirm_background
+  - kind: textarea
+    value: { en: "<dark_red>Delete this rank?", fr: "<dark_red>Supprimer ce grade ?" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+size: 27
+vanilla_texture: false
+inputs:
+  - name: rank
+    type: string
+  - name: info
+    type: list
+    source: { ref: "guilds:ranks", filter: { id: "{rank}" } }
+elements:
+  - id: rank
+    positions: "13"
+    iterates: { source: info, alias: r }
+    states:
+      - if:
+          - expression: r.top
+        image: { asset: guilds_rank_top, fit: native }
+        material: GOLDEN_HELMET
+      - if:
+          - expression: r.bottom
+        image: { asset: guilds_rank_bottom, fit: native }
+        material: LEATHER_HELMET
+    image: { asset: guilds_rank, fit: native }
+    material: IRON_HELMET
+    title: "{r.name}"
+    lore:
+      en:
+        - "<gray>Members: <white>{r.members}"
+        - "<gray>Only a rank without members can be deleted."
+      fr:
+        - "<gray>Membres : <white>{r.members}"
+        - "<gray>Seul un grade sans membre peut être supprimé."
+  - id: confirm
+    positions: "19-21"
+    image: { asset: guilds_button_danger, fit: native }
+    label: { text: { en: "<white>Delete", fr: "<white>Supprimer" }, offset_y: 1 }
+    title:
+      en: "<green>Delete"
+      fr: "<green>Supprimer"
+    click:
+      left:
+        - guilds:rank_delete: "{info[0].id}"
+        - open_previous_menu
+  - id: cancel
+    positions: "23-25"
+    image: { asset: guilds_button_plain, fit: native }
+    label: { text: { en: "<white>Cancel", fr: "<white>Annuler" }, offset_y: 1 }
+    title:
+      en: "<red>Cancel"
+      fr: "<red>Annuler"
+    click:
+      left:
+        - open_previous_menu

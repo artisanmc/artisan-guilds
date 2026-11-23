@@ -384,6 +384,8 @@ class GuildMenuTest {
         for (String path : system.getPaths()) {
             // The display rules are not a Document.
             if (path.equals("variants.yaml")) continue;
+            // Images of the 'textured' version and their descriptors: VariantFilesTest.
+            if (path.startsWith("assets/")) continue;
             Map<String, Object> doc = new Yaml().load(new String(system.getFile(path), StandardCharsets.UTF_8));
             String kind = path.contains("menus/") ? "menu/v1" : "dialog/v1";
             assertEquals(kind, doc.get("schema"), path);

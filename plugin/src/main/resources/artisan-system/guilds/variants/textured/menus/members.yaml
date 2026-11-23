@@ -1,0 +1,100 @@
+schema: menu/v1
+# The guild's members for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/members.yaml drawn with images. Same inputs, same clicks. The window is the image
+# guilds_list_background (vanilla_texture: false); the members keep their heads in the 28 slots.
+title:
+  - kind: background
+    asset_id: guilds_list_background
+  - kind: textarea
+    value: { en: "Guild members", fr: "Membres de la guilde" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+size: 54
+vanilla_texture: false
+inputs:
+  - name: members
+    type: list
+    source: { ref: "guilds:members" }
+elements:
+  - id: list
+    positions: "10-16,19-25,28-34,37-43"
+    iterates: { source: members, alias: m }
+    material: PLAYER_HEAD
+    head: "playerhead:{m.name}"
+    title: "<white>{m.name}"
+    # The rank, the status, then only what the viewer may do to this member (the commands' own rules).
+    lore:
+      en:
+        - "<gray>Rank: {m.rank}"
+        - '{(m.online ? "<green>Online" : "<gray>Offline") + (m.can_promote || m.can_demote || m.can_kick ? "\n" : "") + (m.can_promote ? "\n<yellow>Left click <gray>: promote" : "") + (m.can_demote ? "\n<yellow>Right click <gray>: demote" : "") + (m.can_kick ? "\n<red>Shift + right click <gray>: kick" : "")}'
+      fr:
+        - "<gray>Grade : {m.rank}"
+        - '{(m.online ? "<green>En ligne" : "<gray>Hors ligne") + (m.can_promote || m.can_demote || m.can_kick ? "\n" : "") + (m.can_promote ? "\n<yellow>Clic gauche <gray>: promouvoir" : "") + (m.can_demote ? "\n<yellow>Clic droit <gray>: rétrograder" : "") + (m.can_kick ? "\n<red>Shift + clic droit <gray>: exclure" : "")}'
+    click:
+      left:
+        - if:
+            - expression: m.can_promote
+          do:
+            - module_command: { command: "guilds:guild.promote", args: { member: "{m.name}" } }
+            - set_arg: { arg: refresh, value: "1" }
+      right:
+        - if:
+            - expression: m.can_demote
+          do:
+            - module_command: { command: "guilds:guild.demote", args: { member: "{m.name}" } }
+            - set_arg: { arg: refresh, value: "1" }
+      shift_right:
+        - if:
+            - expression: m.can_kick
+          do:
+            - open_dialog: { dialog_id: kick, context: { target: "{m.name}" } }
+  # Two slots high each, on both sides of the list; greyed at its ends.
+  - id: previous
+    positions: "18,27"
+    states:
+      - if:
+          - pagination_at_first: list
+        image: { asset: guilds_prev_off, fit: native }
+        title: " "
+    image: { asset: guilds_prev, fit: native }
+    title:
+      en: "<yellow>Previous page"
+      fr: "<yellow>Page précédente"
+    click:
+      left:
+        - pagination_prev: list
+  - id: next
+    positions: "26,35"
+    states:
+      - if:
+          - pagination_at_last: list
+        image: { asset: guilds_next_off, fit: native }
+        title: " "
+    image: { asset: guilds_next, fit: native }
+    title:
+      en: "<yellow>Next page"
+      fr: "<yellow>Page suivante"
+    click:
+      left:
+        - pagination_next: list
+  - id: back
+    positions: "45"
+    image: { asset: guilds_back, fit: native }
+    title:
+      en: "<gray>Back"
+      fr: "<gray>Retour"
+    click:
+      left:
+        - open_previous_menu
+  - id: close
+    positions: "53"
+    image: { asset: guilds_close, fit: native }
+    title:
+      en: "<red>Close"
+      fr: "<red>Fermer"
+    click:
+      left:
+        - close_menu
