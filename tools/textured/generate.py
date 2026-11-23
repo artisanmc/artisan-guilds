@@ -8,6 +8,8 @@ texts are title texts and button labels, translated.
 """
 from pathlib import Path
 
+import math
+
 from PIL import Image, ImageDraw
 
 OUT = Path(__file__).resolve().parents[2] / "plugin/src/main/resources/artisan-system/guilds/assets"
@@ -207,24 +209,18 @@ def icon_home():  # a house
         "B": (110, 170, 220, 255), "d": (110, 70, 34, 255), "g": GOLD})
 
 
-def icon_logs():  # a book and its quill
+def icon_log_small():  # 8x10: the log's book, small enough for half an entry
     return sprite([
-        "............f...",
-        "...........fFf..",
-        "..........fFf...",
-        "..oooooooFfoo...",
-        "..oPPPPPFfPPo...",
-        "..oPllllqlllPo..",
-        "..oPPPPqPPPPPo..",
-        "..oPllqllllPPo..",
-        "..oPPPPPPPPPPo..",
-        "..oPllllllllPo..",
-        "..oPPPPPPPPPPo..",
-        "..oPllllllPPPo..",
-        "..oPPPPPPPPPPo..",
-        "..oBBBBBBBBBBo..",
-        "..oooooooooooo..",
-        "................",
+        "......f.",
+        "oooooFfo",
+        "oPPPPfPo",
+        "oPllqllo",
+        "oPPqPPPo",
+        "oPllllPo",
+        "oPPPPPPo",
+        "oPlllPPo",
+        "oBBBBBBo",
+        "oooooooo",
     ], {"o": (60, 34, 20, 255), "P": (236, 226, 196, 255), "l": (150, 140, 120, 255), "B": (140, 60, 40, 255),
         "f": (220, 220, 220, 255), "F": (255, 255, 255, 255), "q": (60, 60, 60, 255)})
 
@@ -435,37 +431,63 @@ def box(w, icon):
     return t
 
 
-def with_icon(t, icon, x):
-    t = t.copy()
-    t.alpha_composite(icon, (x, (t.height - icon.height) // 2))
+def back():
+    """Back to the menu before (one slot): a gold arrow turning back, straight 45 degree head, its
+    underside a shade darker, outlined."""
+    n = 16
+    m = [[False] * n for _ in range(n)]
+    cx, cy = 9.0, 10.5
+    for y in range(n):
+        for x in range(n):
+            r = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+            a = math.degrees(math.atan2(cy - y - 0.5, x + 0.5 - cx)) % 360
+            if 2.6 <= r <= 5.4 and (a <= 95 or a >= 320):
+                m[y][x] = True  # the curve, from the top round to the right and down
+    for x in range(5, 10):
+        for y in (5, 6, 7):
+            m[y][x] = True  # the shaft
+    for x in range(1, 6):
+        for y in range(6 - (x - 1), 6 + (x - 1) + 1):
+            m[y][x] = True  # the head, pointing left
+    t = Image.new("RGBA", (n, n), CLEAR)
+    for y in range(n):
+        for x in range(n):
+            if m[y][x]:
+                top = y == 0 or not m[y - 1][x]
+                bottom = y == n - 1 or not m[y + 1][x]
+                t.putpixel((x, y), GOLD_H if top else GOLD_D if bottom else GOLD)
+    solid = [row[:] for row in m]
+    for y in range(n - 1, 0, -1):
+        for x in range(n):
+            if m[y - 1][x] and not m[y][x]:
+                t.putpixel((x, y), (150, 96, 20, 255))
+                solid[y][x] = True
+    for y in range(n):
+        for x in range(n):
+            if not solid[y][x] and any(0 <= x + dx < n and 0 <= y + dy < n and solid[y + dy][x + dx]
+                                       for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                t.putpixel((x, y), OUTLINE)
     return t
 
 
-def back_button():
-    """Back to the menu before over 3 slots: a vanilla button with a gold arrow; "Back" is its label."""
-    t = button("plain")
-    a = sprite([
-        "...o",
-        "..oG",
-        ".oGG",
-        "oGGG",
-        ".oGG",
-        "..oG",
-        "...o",
-    ], {"o": OUTLINE, "G": GOLD})
-    return with_icon(t, a, 5)
+def half_card(icon, x=2):
+    """Half an entry (54x18, one row of 3 slots): the plate of a card, its icon on the left, its name the
+    button's label."""
+    t = Image.new("RGBA", (54, 18), CLEAR)
+    d = ImageDraw.Draw(t)
+    d.rectangle([1, 0, 52, 17], fill=OUTLINE)
+    d.rectangle([0, 1, 53, 16], fill=OUTLINE)
+    d.rectangle([1, 1, 52, 16], fill=(214, 214, 214, 255))
+    d.rectangle([1, 1, 51, 1], fill=VHI); d.rectangle([1, 1, 1, 15], fill=VHI)
+    d.rectangle([2, 16, 52, 16], fill=(150, 150, 150, 255)); d.rectangle([52, 2, 52, 16], fill=(150, 150, 150, 255))
+    t.alpha_composite(icon, (x, (18 - icon.height) // 2))
+    return t
 
 
-def chat_button(mode):
-    """The chat mode over 2 slots (36x18): a vanilla button with a bubble in the mode's colour, the mode
-    itself on hover."""
+def chat_card(mode):
+    """The chat mode, half an entry: a bubble in the mode's colour (white, green, blue); the mode is the label."""
     color = {"public": (236, 236, 236, 255), "guild": (90, 210, 80, 255), "ally": (90, 200, 230, 255)}[mode]
-    t = Image.new("RGBA", (36, 18), CLEAR)
-    t.alpha_composite(button("plain").crop((0, 0, 18, 18)), (0, 0))
-    t.alpha_composite(button("plain").crop((36, 0, 54, 18)), (18, 0))
-    bubble = icon_bubble(color)
-    t.alpha_composite(bubble, ((36 - bubble.width) // 2, 5))
-    return t
+    return half_card(icon_bubble(color), 4)
 
 
 def alliance_tile(state):
@@ -538,17 +560,16 @@ IMAGES = {
     "guilds_card_alliances_offer": card_badge(card(icon_alliances())),
     "guilds_card_chest": card(icon_chest()),
     "guilds_card_home": card(icon_home()),
-    "guilds_card_logs": card(icon_logs()),
+    "guilds_card_logs": half_card(icon_log_small(), 3),
     "guilds_balance": box(54, icon_coin()),
     "guilds_members_count": box(54, icon_heads()),
-    "guilds_chat_public": chat_button("public"),
-    "guilds_chat_guild": chat_button("guild"),
-    "guilds_chat_ally": chat_button("ally"),
+    "guilds_chat_public": chat_card("public"),
+    "guilds_chat_guild": chat_card("guild"),
+    "guilds_chat_ally": chat_card("ally"),
     "guilds_button": button("green"),
     "guilds_button_danger": button("red"),
     "guilds_button_plain": button("plain"),
     "guilds_button_locked": button_locked(),
-    "guilds_button_back": back_button(),
     "guilds_rank_top": rank_tile("top"),
     "guilds_rank": rank_tile("middle"),
     "guilds_rank_bottom": rank_tile("bottom"),
@@ -561,6 +582,7 @@ IMAGES = {
     "guilds_prev_off": arrow(True, False),
     "guilds_next": arrow(False, True),
     "guilds_next_off": arrow(False, False),
+    "guilds_back": back(),
     "guilds_close": close(),
 }
 

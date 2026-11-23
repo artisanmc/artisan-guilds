@@ -3,8 +3,8 @@ schema: menu/v1
 # menus/main.yaml drawn with images. Same inputs, same data, same clicks; only the look changes.
 # The window is the image guilds_main_background (vanilla_texture: false). The menu's name and the
 # guild's are title texts, centred; each entry is a card over 3x2 slots, its name the card's label
-# (the dark grey of a window's title). The bottom row: the bank and the members in boxes, the chat
-# mode.
+# (the dark grey of a window's title); the log and the chat mode share the last one. The bottom row:
+# the bank and the members in boxes.
 # The images are drawn by tools/textured/generate.py.
 title:
   - kind: background
@@ -154,10 +154,11 @@ elements:
       left:
         - close_menu
         - module_command: { command: "guilds:guild.home" }
+  # The log and the chat mode share the last card's place, one row each.
   - id: logs
-    positions: "33-35,42-44"
+    positions: "33-35"
     image: { asset: guilds_card_logs, fit: native }
-    label: { text: { en: "<#404040>Log", fr: "<#404040>Journal" }, offset_y: 8 }
+    label: { text: { en: "<#404040>Log", fr: "<#404040>Journal" }, offset_x: 4 }
     title:
       en: "<yellow>Log"
       fr: "<yellow>Journal"
@@ -170,7 +171,7 @@ elements:
       left:
         - close_menu
         - module_command: { command: "guilds:guild.logs" }
-  # The bottom row: the bank and the members in boxes (their value is the label), the chat mode.
+  # The bottom row: the bank and the members in boxes (their value is the label).
   - id: bank
     positions: "45-47"
     image: { asset: guilds_balance, fit: native }
@@ -197,14 +198,15 @@ elements:
         - "<gray>{info[0].online} online"
       fr:
         - "<gray>{info[0].online} en ligne"
-  # Where the viewer's chat lines go, by the bubble's colour (white, green, blue); a click moves to
-  # the next mode (/guild chat).
+  # Where the viewer's chat lines go: the bubble's colour (white, green, blue) and the label; a click
+  # moves to the next mode (/guild chat).
   - id: chat
-    positions: "51-52"
+    positions: "42-44"
     states:
       - if:
           - placeholder_equals: { placeholder: "{info[0].chat}", value: "guild" }
         image: { asset: guilds_chat_guild, fit: native }
+        label: { text: { en: "<#404040>Guild", fr: "<#404040>Guilde" }, offset_x: 8 }
         title:
           en: "<yellow>Chat: <green>guild"
           fr: "<yellow>Chat : <green>guilde"
@@ -224,6 +226,7 @@ elements:
       - if:
           - placeholder_equals: { placeholder: "{info[0].chat}", value: "ally" }
         image: { asset: guilds_chat_ally, fit: native }
+        label: { text: { en: "<#404040>Allies", fr: "<#404040>Alliés" }, offset_x: 8 }
         title:
           en: "<yellow>Chat: <aqua>alliance"
           fr: "<yellow>Chat : <aqua>alliance"
@@ -241,6 +244,7 @@ elements:
             - module_command: { command: "guilds:guild.chat" }
             - set_arg: { arg: refresh, value: "{info[0].chat}" }
     image: { asset: guilds_chat_public, fit: native }
+    label: { text: { en: "<#404040>Public", fr: "<#404040>Public" }, offset_x: 8 }
     title:
       en: "<yellow>Chat: <white>public"
       fr: "<yellow>Chat : <white>public"
