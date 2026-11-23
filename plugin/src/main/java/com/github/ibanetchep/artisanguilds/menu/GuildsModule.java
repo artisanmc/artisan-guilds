@@ -60,7 +60,7 @@ public final class GuildsModule implements ArtisanModule {
 
     /** The shipped menus and dialogs: raise {@link #SYSTEM_VERSION} whenever one of them changes. */
     static final String SYSTEM = "guilds_menus";
-    static final int SYSTEM_VERSION = 7;
+    static final int SYSTEM_VERSION = 8;
     static final String SYSTEM_ROOT = "artisan-system/guilds";
     static final List<String> SYSTEM_FILES = List.of(
             "menus/main.yaml",
@@ -315,6 +315,7 @@ public final class GuildsModule implements ArtisanModule {
                 new DataSourceField("level", ModelFieldType.integer(), null),
                 new DataSourceField("max_level", ModelFieldType.integer(), "The highest level of data/settings.yml"),
                 new DataSourceField("balance", ModelFieldType.integer(), "The bank, rounded"),
+                new DataSourceField("balance_short", ModelFieldType.string(), "The bank in at most 5 characters: 9999, 18.4K, 184K, 1.8M, up to T"),
                 new DataSourceField("members", ModelFieldType.integer(), null),
                 new DataSourceField("max_members", ModelFieldType.integer(), "At this level"),
                 new DataSourceField("online", ModelFieldType.integer(), "Members online on the network"),
