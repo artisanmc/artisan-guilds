@@ -1,0 +1,55 @@
+schema: menu/v1
+# Disbanding the guild, for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/disband_confirm.yaml drawn with images. Same inputs, same clicks. The window is the image
+# guilds_confirm_background (vanilla_texture: false): the guild in the middle slot, then the two
+# buttons, red for what cannot be undone, a vanilla one to cancel.
+title:
+  - kind: background
+    asset_id: guilds_confirm_background
+  - kind: textarea
+    value: { en: "<dark_red>Disband your guild?", fr: "<dark_red>Dissoudre votre guilde ?" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+size: 27
+vanilla_texture: false
+inputs:
+  - name: viewer
+    type: list
+    source: { ref: "guilds:viewer" }
+elements:
+  - id: guild
+    positions: "13"
+    iterates: { source: viewer, alias: v }
+    material: TNT
+    title: "<gold>{v.guild_name}"
+    lore:
+      en:
+        - "<red>Its members, bank and lands are lost."
+        - "<red>This cannot be undone."
+      fr:
+        - "<red>Ses membres, sa banque et ses territoires sont perdus."
+        - "<red>C'est définitif."
+  - id: confirm
+    positions: "19-21"
+    image: { asset: guilds_button_danger, fit: native }
+    label: { text: { en: "<white>Disband", fr: "<white>Dissoudre" }, offset_y: 1 }
+    title:
+      en: "<green>Disband"
+      fr: "<green>Dissoudre"
+    click:
+      left:
+        - module_command: { command: "guilds:guild.disband.confirm" }
+        - close_menu
+  - id: cancel
+    positions: "23-25"
+    image: { asset: guilds_button_plain, fit: native }
+    label: { text: { en: "<white>Cancel", fr: "<white>Annuler" }, offset_y: 1 }
+    title:
+      en: "<red>Cancel"
+      fr: "<red>Annuler"
+    click:
+      left:
+        - close_menu

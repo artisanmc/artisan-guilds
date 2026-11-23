@@ -1,0 +1,57 @@
+schema: menu/v1
+# Ending an alliance, for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/alliance_end_confirm.yaml drawn with images. Same inputs, same clicks. The window is the
+# image guilds_confirm_background (vanilla_texture: false): the ally's plate in the middle slot,
+# then the two buttons, red for what cannot be undone, a vanilla one to cancel.
+title:
+  - kind: background
+    asset_id: guilds_confirm_background
+  - kind: textarea
+    value: { en: "<dark_red>End this alliance?", fr: "<dark_red>Rompre cette alliance ?" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+size: 27
+vanilla_texture: false
+inputs:
+  # The allied guild's id, given by the alliances menu.
+  - name: ally
+    type: string
+  - name: info
+    type: list
+    source: { ref: "guilds:alliances", filter: { id: "{ally}" } }
+elements:
+  - id: ally
+    positions: "13"
+    iterates: { source: info, alias: a }
+    image: { asset: guilds_alliance, fit: native }
+    material: LIME_BANNER
+    title: "<white>{a.name}"
+    lore:
+      en:
+        - "<gray>Its members leave your alliance chat."
+      fr:
+        - "<gray>Ses membres quittent ton chat d'alliance."
+  - id: confirm
+    positions: "19-21"
+    image: { asset: guilds_button_danger, fit: native }
+    label: { text: { en: "<white>End", fr: "<white>Rompre" }, offset_y: 1 }
+    title:
+      en: "<green>End the alliance"
+      fr: "<green>Rompre l'alliance"
+    click:
+      left:
+        - module_command: { command: "guilds:guild.alliance.remove", args: { guild: "{info[0].name}" } }
+        - open_previous_menu
+  - id: cancel
+    positions: "23-25"
+    image: { asset: guilds_button_plain, fit: native }
+    label: { text: { en: "<white>Cancel", fr: "<white>Annuler" }, offset_y: 1 }
+    title:
+      en: "<red>Cancel"
+      fr: "<red>Annuler"
+    click:
+      left:
+        - open_previous_menu

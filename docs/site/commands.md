@@ -24,6 +24,7 @@ sidebar:
 | `/guild home`, `sethome`, `delhome` | The guild home. | |
 | `/guild lands` | The guild's lands. | |
 | `/guild info [guild]`, `list [page]`, `logs [page] [guild]` | Information, online guilds, the guild log. | `/g info Smiths` |
+| `/guild alliance` | The alliances menu: allies, offers to answer, offers sent. | |
 | `/guild alliance invite\|accept\|remove <guild>` | Alliances. | `/g alliance invite Miners` |
 | `/guild reload` | Reloads the configuration and messages. Needs `guilds.reload`. | |
 | `/guild admin setlevel <guild> <level>` | Sets a guild's level; also from the console. Needs `guilds.admin.setlevel`. | `guild admin setlevel Smiths 3` |

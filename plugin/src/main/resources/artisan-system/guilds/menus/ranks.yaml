@@ -79,6 +79,15 @@ elements:
           - pagination_at_last: ranks
         material: WHITE_STAINED_GLASS_PANE
         title: " "
+  - id: back
+    positions: "45"
+    material: ARROW
+    title:
+      en: "<gray>Back"
+      fr: "<gray>Retour"
+    click:
+      left:
+        - open_previous_menu
   - id: access
     positions: "49"
     iterates: { source: viewer, alias: v }

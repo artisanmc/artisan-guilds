@@ -126,6 +126,52 @@ class GuildMenuTest {
     }
 
     @Test
+    void guildRowTellsTheChatModeAndTheAlliances() {
+        Map<String, Object> row = data.guild(owner).getFirst();
+        assertEquals("public", row.get("chat"));
+        assertEquals(0, row.get("allies"));
+        assertEquals(0, row.get("alliance_offers"));
+        assertEquals(true, row.get("can_manage_alliances"));
+
+        guilds.guilds().toggleChatMode(owner);
+        GuildData beta = guildOf("Eve", "Beta");
+        beta.allianceInvites().add(guild.getId());
+        row = data.guild(owner).getFirst();
+        assertEquals("guild", row.get("chat"));
+        assertEquals(1, row.get("alliance_offers"));
+        assertEquals(false, data.guild(member(guild, "Bob")).getFirst().get("can_manage_alliances"));
+    }
+
+    @Test
+    void alliancesListAlliesThenOffersReceivedThenOffersSent() {
+        GuildData zeta = guildOf("Zed", "Zeta");
+        GuildData beta = guildOf("Eve", "Beta");
+        GuildData gamma = guildOf("Gus", "Gamma");
+        GuildData delta = guildOf("Dan", "Delta");
+        guild.allianceIds().add(zeta.getId());
+        zeta.allianceIds().add(guild.getId());
+        guild.allianceIds().add(beta.getId());
+        beta.allianceIds().add(guild.getId());
+        gamma.allianceInvites().add(guild.getId());
+        guild.allianceInvites().add(delta.getId());
+
+        List<Map<String, Object>> rows = data.alliances(owner);
+        assertEquals(List.of("Beta", "Zeta", "Gamma", "Delta"), rows.stream().map(r -> r.get("name")).toList());
+        assertEquals(List.of("ally", "ally", "offer", "sent"), rows.stream().map(r -> r.get("state")).toList());
+        assertEquals(true, rows.getFirst().get("can_manage"));
+        assertEquals(1, rows.getFirst().get("members"));
+
+        assertEquals(false, data.alliances(member(guild, "Bob")).getFirst().get("can_manage"), "seen, not managed");
+        assertTrue(data.alliances(f.player("Nobody")).isEmpty());
+        assertEquals(2, data.alliances(null).size(), "the editor's preview");
+    }
+
+    private GuildData guildOf(String owner, String name) {
+        f.guilds.createGuild(f.player(owner), name);
+        return f.registry.byName(name);
+    }
+
+    @Test
     void memberRowsSayWhatTheViewerMayDoToEach() {
         Player bob = member(guild, "Bob");
         guild.getMember(bob.getUniqueId()).setName("Bob");
@@ -361,7 +407,7 @@ class GuildMenuTest {
         // Without it Artisan does not read the folder: guilds:main would be "not found".
         assertEquals(GuildsModule.MODULE_FILE, Files.readString(folder.toPath().resolve("artisan-module.yml")));
         assertEquals(Set.of(GuildsModule.VIEWER, GuildsModule.GUILD, GuildsModule.RANKS, GuildsModule.RANK_PERMISSIONS,
-                        GuildsModule.MEMBERS),
+                        GuildsModule.MEMBERS, GuildsModule.ALLIANCES),
                 sources.refs());
         assertEquals(Set.of(GuildsModule.RANK_MOVE, GuildsModule.RANK_DELETE, GuildsModule.RANK_RENAME,
                 GuildsModule.RANK_CREATE, GuildsModule.RANK_PERMISSION), actionRegistry.names());
@@ -384,12 +430,14 @@ class GuildMenuTest {
         for (String path : system.getPaths()) {
             // The display rules are not a Document.
             if (path.equals("variants.yaml")) continue;
+            // Images of the 'textured' version and their descriptors: VariantFilesTest.
+            if (path.startsWith("assets/")) continue;
             Map<String, Object> doc = new Yaml().load(new String(system.getFile(path), StandardCharsets.UTF_8));
             String kind = path.contains("menus/") ? "menu/v1" : "dialog/v1";
             assertEquals(kind, doc.get("schema"), path);
         }
         for (String ref : List.of(GuildCommands.MAIN_MENU, GuildCommands.MEMBERS_MENU, GuildCommands.RANKS_MENU,
-                GuildCommands.DISBAND_MENU)) {
+                GuildCommands.DISBAND_MENU, GuildCommands.ALLIANCES_MENU)) {
             String[] parts = ref.split(":");
             assertEquals(GuildsModule.FOLDER, parts[0]);
             assertTrue(system.getPaths().contains("menus/" + parts[1] + ".yaml"), ref);

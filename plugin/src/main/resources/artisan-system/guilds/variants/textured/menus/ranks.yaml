@@ -1,0 +1,201 @@
+schema: menu/v1
+# The guild's ranks for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/ranks.yaml drawn with images. Same inputs, same clicks. The window is the image
+# guilds_list_background (vanilla_texture: false). A rank is a plate: a crown for the highest, one
+# chevron for the lowest (new members), two in between. "Add" is the button at the bottom, greyed
+# with a lock for a viewer who may not manage the ranks (the list is then empty).
+title:
+  - kind: background
+    asset_id: guilds_list_background
+  - kind: textarea
+    value: { en: "Guild ranks", fr: "Grades de la guilde" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+size: 54
+vanilla_texture: false
+inputs:
+  - name: viewer
+    type: list
+    source: { ref: "guilds:viewer" }
+  # Empty unless the viewer may manage the ranks (owner or MANAGE_RANKS).
+  - name: ranks
+    type: list
+    source: { ref: "guilds:ranks" }
+elements:
+  - id: ranks
+    positions: "10-16,19-25,28-34,37-43"
+    iterates: { source: ranks, alias: r }
+    # A state replaces the whole display: each one repeats the rank's title, lore and clicks.
+    states:
+      - if:
+          - expression: r.top
+        image: { asset: guilds_rank_top, fit: native }
+        material: GOLDEN_HELMET
+        title: "{r.name}"
+        lore:
+          en:
+            - "<gray>Members: <white>{r.members}"
+            - ""
+            - "<aqua>[Left click] <white>manage the permissions"
+            - "<aqua>[Right click] <white>delete the rank"
+            - ""
+            - "<aqua>[Shift + left click] <white>move down"
+            - "<aqua>[Shift + right click] <white>move up"
+          fr:
+            - "<gray>Membres : <white>{r.members}"
+            - ""
+            - "<aqua>[Clic gauche] <white>gérer les permissions"
+            - "<aqua>[Clic droit] <white>supprimer le grade"
+            - ""
+            - "<aqua>[Shift + clic gauche] <white>déplacer vers le bas"
+            - "<aqua>[Shift + clic droit] <white>déplacer vers le haut"
+        click:
+          left:
+            - open_menu: { menu_id: rank_permissions, context: { rank: "{r.id}" } }
+          right:
+            - open_menu: { menu_id: rank_delete_confirm, context: { rank: "{r.id}" } }
+          shift_left:
+            - guilds:rank_move: { rank: "{r.id}", direction: down }
+            - set_arg: { arg: refresh, value: "{r.id}" }
+          shift_right:
+            - guilds:rank_move: { rank: "{r.id}", direction: up }
+            - set_arg: { arg: refresh, value: "{r.id}" }
+      - if:
+          - expression: r.bottom
+        image: { asset: guilds_rank_bottom, fit: native }
+        material: LEATHER_HELMET
+        title: "{r.name}"
+        lore:
+          en:
+            - "<gray>Members: <white>{r.members}"
+            - ""
+            - "<aqua>[Left click] <white>manage the permissions"
+            - "<aqua>[Right click] <white>delete the rank"
+            - ""
+            - "<aqua>[Shift + left click] <white>move down"
+            - "<aqua>[Shift + right click] <white>move up"
+          fr:
+            - "<gray>Membres : <white>{r.members}"
+            - ""
+            - "<aqua>[Clic gauche] <white>gérer les permissions"
+            - "<aqua>[Clic droit] <white>supprimer le grade"
+            - ""
+            - "<aqua>[Shift + clic gauche] <white>déplacer vers le bas"
+            - "<aqua>[Shift + clic droit] <white>déplacer vers le haut"
+        click:
+          left:
+            - open_menu: { menu_id: rank_permissions, context: { rank: "{r.id}" } }
+          right:
+            - open_menu: { menu_id: rank_delete_confirm, context: { rank: "{r.id}" } }
+          shift_left:
+            - guilds:rank_move: { rank: "{r.id}", direction: down }
+            - set_arg: { arg: refresh, value: "{r.id}" }
+          shift_right:
+            - guilds:rank_move: { rank: "{r.id}", direction: up }
+            - set_arg: { arg: refresh, value: "{r.id}" }
+    # Each state also names a material: what a rank shows while its image is not in the pack yet.
+    image: { asset: guilds_rank, fit: native }
+    material: IRON_HELMET
+    title: "{r.name}"
+    lore:
+      en:
+        - "<gray>Members: <white>{r.members}"
+        - ""
+        - "<aqua>[Left click] <white>manage the permissions"
+        - "<aqua>[Right click] <white>delete the rank"
+        - ""
+        - "<aqua>[Shift + left click] <white>move down"
+        - "<aqua>[Shift + right click] <white>move up"
+      fr:
+        - "<gray>Membres : <white>{r.members}"
+        - ""
+        - "<aqua>[Clic gauche] <white>gérer les permissions"
+        - "<aqua>[Clic droit] <white>supprimer le grade"
+        - ""
+        - "<aqua>[Shift + clic gauche] <white>déplacer vers le bas"
+        - "<aqua>[Shift + clic droit] <white>déplacer vers le haut"
+    click:
+      left:
+        - open_menu: { menu_id: rank_permissions, context: { rank: "{r.id}" } }
+      right:
+        - open_menu: { menu_id: rank_delete_confirm, context: { rank: "{r.id}" } }
+      shift_left:
+        - guilds:rank_move: { rank: "{r.id}", direction: down }
+        - set_arg: { arg: refresh, value: "{r.id}" }
+      shift_right:
+        - guilds:rank_move: { rank: "{r.id}", direction: up }
+        - set_arg: { arg: refresh, value: "{r.id}" }
+  - id: previous
+    positions: "18,27"
+    states:
+      - if:
+          - pagination_at_first: ranks
+        image: { asset: guilds_prev_off, fit: native }
+        title: " "
+    image: { asset: guilds_prev, fit: native }
+    title:
+      en: "<yellow>Previous"
+      fr: "<yellow>Précédent"
+    click:
+      left:
+        - pagination_prev: ranks
+  - id: next
+    positions: "26,35"
+    states:
+      - if:
+          - pagination_at_last: ranks
+        image: { asset: guilds_next_off, fit: native }
+        title: " "
+    image: { asset: guilds_next, fit: native }
+    title:
+      en: "<yellow>Next"
+      fr: "<yellow>Suivant"
+    click:
+      left:
+        - pagination_next: ranks
+  - id: back
+    positions: "45"
+    image: { asset: guilds_back, fit: native }
+    title:
+      en: "<gray>Back"
+      fr: "<gray>Retour"
+    click:
+      left:
+        - open_previous_menu
+  # Add a rank; without the right to manage the ranks, the same button greyed with a lock says why
+  # (the default menu's barrier).
+  - id: add_rank
+    positions: "48-50"
+    states:
+      - if:
+          - placeholder_equals: { placeholder: "{viewer[0].can_manage_ranks}", value: "false" }
+        image: { asset: guilds_button_locked, fit: native }
+        label: { text: { en: "<gray>Add", fr: "<gray>Ajouter" }, offset_x: 4, offset_y: 1 }
+        title:
+          en: "<red>You cannot manage the ranks"
+          fr: "<red>Vous ne pouvez pas gérer les grades"
+        lore:
+          en:
+            - "<gray>Ask your guild's owner for the permission."
+          fr:
+            - "<gray>Demandez la permission au chef de votre guilde."
+    image: { asset: guilds_button, fit: native }
+    label: { text: { en: "<white>Add", fr: "<white>Ajouter" }, offset_y: 1 }
+    title:
+      en: "<dark_green><bold>Add a rank"
+      fr: "<dark_green><bold>Ajouter un grade"
+    click:
+      left:
+        - open_dialog: rank_create
+  - id: close
+    positions: "53"
+    image: { asset: guilds_close, fit: native }
+    title:
+      en: "<red>Close"
+      fr: "<red>Fermer"
+    click:
+      left:
+        - close_menu

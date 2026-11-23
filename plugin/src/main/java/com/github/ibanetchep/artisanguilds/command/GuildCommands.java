@@ -41,6 +41,7 @@ public final class GuildCommands {
     public static final String MAIN_MENU = "guilds:main";
     public static final String RANKS_MENU = "guilds:ranks";
     public static final String MEMBERS_MENU = "guilds:members";
+    public static final String ALLIANCES_MENU = "guilds:alliances";
     public static final String DISBAND_MENU = "guilds:disband_confirm";
     /** Also a quest's reward, from the console: {@code guild admin setlevel {actor_name} 3}. */
     public static final String SETLEVEL_PERMISSION = "guilds.admin.setlevel";
@@ -184,6 +185,7 @@ public final class GuildCommands {
                                 suggest.allianceOffers(), (p, guild) -> guilds.alliances().accept(p, guild)))
                         .child(allianceCommand("remove", "End an alliance", "Rompre une alliance",
                                 suggest.allies(), (p, guild) -> guilds.alliances().revoke(p, guild)))
+                        .opensMenu(ALLIANCES_MENU)
                         .build())
                 .child(sub("ranks", "Manage your guild's ranks", "Gérer les grades de la guilde")
                         .opensMenu(RANKS_MENU).build())

@@ -24,6 +24,7 @@ sidebar:
 | `plugins/ArtisanGuilds/config.yml` | What belongs to this server only: the [chest](../configuration/config-yml/) |
 | `plugins/Artisan/modules/guilds/data/settings.yml` | [Settings](../configuration/settings/): language, levels |
 | `plugins/Artisan/modules/guilds/menus/`, `dialogs/` | The guild, members, ranks and confirmation menus, rank dialogs |
+| `plugins/Artisan/modules/guilds/variants/`, `assets/` | The same menus for Bedrock players, and drawn with images for Java players who loaded the resource pack (`variants.yaml`: who sees which) |
 | Tables `artisan_guilds_*` | Guilds, ranks, members, logs, alliances, chest |
 
 ## Coming from MSGuilds

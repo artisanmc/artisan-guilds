@@ -1,0 +1,103 @@
+schema: menu/v1
+# A rank's permissions for Java players who loaded the resource pack (variants.yaml): the module's
+# menus/rank_permissions.yaml drawn with images. Same inputs, same clicks. The window is the image
+# guilds_list_background (vanilla_texture: false); the rank's name is a title text, its hover the
+# area under it. A permission is a plate: the green check when granted, an empty round otherwise.
+title:
+  - kind: background
+    asset_id: guilds_list_background
+  - kind: textarea
+    value: { en: "Rank permissions", fr: "Permissions du grade" }
+    x: 88
+    y: 6
+    width: 168
+    line_height: 10
+    alignment: center
+  - kind: textarea
+    value: "{info[0].name}"
+    x: 88
+    y: 20
+    width: 168
+    line_height: 14
+    alignment: center
+    size: 12
+size: 54
+vanilla_texture: false
+inputs:
+  # The rank's id, given by the ranks menu.
+  - name: rank
+    type: string
+  - name: info
+    type: list
+    source: { ref: "guilds:ranks", filter: { id: "{rank}" } }
+  # Empty unless the viewer may manage the ranks of the guild of that rank.
+  - name: permissions
+    type: list
+    source: { ref: "guilds:rank_permissions", params: { rank: "{rank}" } }
+elements:
+  - id: rank
+    positions: "2-6"
+    title: "{info[0].name}"
+    lore:
+      en:
+        - "<gray>Members: <white>{info[0].members}"
+      fr:
+        - "<gray>Membres : <white>{info[0].members}"
+  - id: permissions
+    positions: "10-16,19-25,28-34,37-43"
+    iterates: { source: permissions, alias: p }
+    image: { asset: guilds_permission_off, fit: native }
+    material: GRAY_DYE
+    title: "<red>✘ <gray>{p.name}"
+    lore:
+      en:
+        - "<aqua>[Click] <white>grant"
+      fr:
+        - "<aqua>[Clic] <white>accorder"
+    click:
+      left:
+        - guilds:rank_permission: { rank: "{rank}", permission: "{p.key}", granted: "true" }
+        - set_arg: { arg: refresh, value: "{p.key}" }
+    states:
+      - if:
+          - placeholder_equals: { placeholder: "{p.granted}", value: "true" }
+        image: { asset: guilds_permission_on, fit: native }
+        material: LIME_DYE
+        title: "<green>✔ <white>{p.name}"
+        lore:
+          en:
+            - "<aqua>[Click] <white>revoke"
+          fr:
+            - "<aqua>[Clic] <white>retirer"
+        click:
+          left:
+            - guilds:rank_permission: { rank: "{rank}", permission: "{p.key}", granted: "false" }
+            - set_arg: { arg: refresh, value: "{p.key}" }
+  - id: back
+    positions: "45"
+    image: { asset: guilds_back, fit: native }
+    title:
+      en: "<gray>Back"
+      fr: "<gray>Retour"
+    click:
+      left:
+        - open_previous_menu
+  - id: rename
+    positions: "48-50"
+    image: { asset: guilds_button, fit: native }
+    label: { text: { en: "<white>Rename", fr: "<white>Renommer" }, offset_y: 1 }
+    title:
+      en: "<dark_green><bold>Rename the rank"
+      fr: "<dark_green><bold>Renommer le rang"
+    click:
+      left:
+        - open_dialog: { dialog_id: rank_rename, context: { rank: "{info[0].id}" } }
+  - id: close
+    positions: "53"
+    image: { asset: guilds_close, fit: native }
+    title:
+      en: "<red>Close"
+      fr: "<red>Fermer"
+    click:
+      left:
+        - close_menu
