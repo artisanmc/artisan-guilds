@@ -411,14 +411,45 @@ def arrow(left, enabled, w=18, h=36):
     return t
 
 
+def shaded(m, light, mid, dark, under):
+    """A pixel mask drawn like the vanilla icons: light top edges, dark bottom edges, a darker underside
+    one pixel below, outlined in black."""
+    n = len(m)
+    t = Image.new("RGBA", (n, n), CLEAR)
+    for y in range(n):
+        for x in range(n):
+            if m[y][x]:
+                top = y == 0 or not m[y - 1][x]
+                bottom = y == n - 1 or not m[y + 1][x]
+                t.putpixel((x, y), light if top else dark if bottom else mid)
+    solid = [row[:] for row in m]
+    for y in range(n - 1, 0, -1):
+        for x in range(n):
+            if m[y - 1][x] and not m[y][x]:
+                t.putpixel((x, y), under)
+                solid[y][x] = True
+    for y in range(n):
+        for x in range(n):
+            if not solid[y][x] and any(0 <= x + dx < n and 0 <= y + dy < n and solid[y + dy][x + dx]
+                                       for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                t.putpixel((x, y), OUTLINE)
+    return t
+
+
 def close():
-    t = Image.new("RGBA", (16, 16), CLEAR)
-    for i in range(3, 13):
-        for (x, y) in ((i, i), (i, 15 - i)):
-            for dx in (0, 1):
-                t.putpixel((min(15, x + dx), y), (220, 60, 50, 255))
-    for i in range(3, 13):
-        t.putpixel((i, i), (255, 120, 100, 255))
+    """Close: a thick red cross, shaded and outlined like the back arrow."""
+    n = 16
+    m = [[2 <= x <= 13 and 2 <= y <= 12 and (abs(x - y) <= 1 or abs(x + y - 14) <= 1)
+          for x in range(n)] for y in range(n)]
+    light, mid, dark = (255, 130, 110, 255), (220, 60, 50, 255), (160, 36, 30, 255)
+    t = shaded(m, light, mid, dark, (110, 24, 20, 255))
+    for y in range(n):
+        for x in range(n):
+            if m[y][x]:
+                # each bar lit along its upper side, dark along its lower side, one shade per diagonal
+                sides = [v for v, on in ((x - y, abs(x - y) <= 1), (14 - x - y, abs(x + y - 14) <= 1)) if on]
+                v = 0 if len(sides) > 1 else sides[0]
+                t.putpixel((x, y), light if v == 1 else dark if v == -1 else mid)
     return t
 
 
@@ -432,45 +463,20 @@ def box(w, icon):
 
 
 def back():
-    """Back to the menu before (one slot): a gold arrow turning back from the top (like an undo
-    arrow), straight 45 degree head, its
-    underside a shade darker, outlined."""
+    """Back to the menu before (one slot): a gold arrow turning back at a right angle, the tail rising
+    on the right, the same 3 pixel thickness all along, straight 45 degree head."""
     n = 16
     m = [[False] * n for _ in range(n)]
-    cx, cy = 9.5, 6.0
-    for y in range(n):
-        for x in range(n):
-            r = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
-            if x + 0.5 >= cx and 2.5 <= r < 5.5:
-                m[y][x] = True  # the U-turn on the right
-    for x in range(6, 10):
-        for y in (1, 2, 3):
-            m[y][x] = True  # the tail, along the top
-    for x in range(4, 10):
+    for x in range(10, 13):
+        for y in range(2, 12):
+            m[y][x] = True  # the tail, rising on the right
+    for x in range(5, 13):
         for y in (9, 10, 11):
             m[y][x] = True  # the shaft, along the bottom
-    for x in range(1, 5):
-        for y in range(10 - (x - 1), 10 + (x - 1) + 1):
+    for x in range(2, 6):
+        for y in range(10 - (x - 2), 10 + (x - 2) + 1):
             m[y][x] = True  # the head, pointing left
-    t = Image.new("RGBA", (n, n), CLEAR)
-    for y in range(n):
-        for x in range(n):
-            if m[y][x]:
-                top = y == 0 or not m[y - 1][x]
-                bottom = y == n - 1 or not m[y + 1][x]
-                t.putpixel((x, y), GOLD_H if top else GOLD_D if bottom else GOLD)
-    solid = [row[:] for row in m]
-    for y in range(n - 1, 0, -1):
-        for x in range(n):
-            if m[y - 1][x] and not m[y][x]:
-                t.putpixel((x, y), (150, 96, 20, 255))
-                solid[y][x] = True
-    for y in range(n):
-        for x in range(n):
-            if not solid[y][x] and any(0 <= x + dx < n and 0 <= y + dy < n and solid[y + dy][x + dx]
-                                       for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
-                t.putpixel((x, y), OUTLINE)
-    return t
+    return shaded(m, GOLD_H, GOLD, GOLD_D, (150, 96, 20, 255))
 
 
 def half_card(icon, x=2):
