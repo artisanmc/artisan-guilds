@@ -463,18 +463,24 @@ def box(w, icon):
 
 
 def back():
-    """Back to the menu before (one slot): a gold arrow turning back at a right angle, the tail rising
-    on the right, the same 3 pixel thickness all along, straight 45 degree head."""
+    """Back to the menu before (one slot): a thick gold arrow, its head pointing left at the top, the
+    stroke turning back round the right and ending along the bottom, 4 pixels thick all along."""
     n = 16
     m = [[False] * n for _ in range(n)]
-    for x in range(10, 13):
-        for y in range(2, 12):
-            m[y][x] = True  # the tail, rising on the right
-    for x in range(5, 13):
-        for y in (9, 10, 11):
-            m[y][x] = True  # the shaft, along the bottom
-    for x in range(2, 6):
-        for y in range(10 - (x - 2), 10 + (x - 2) + 1):
+    cx, cy = 10.0, 9.0
+    for y in range(n):
+        for x in range(n):
+            r = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+            if x + 0.5 >= cx and 1.0 <= r < 5.1:
+                m[y][x] = True  # the turn, on the right
+    for x in range(5, 10):
+        for y in range(4, 8):
+            m[y][x] = True  # the shaft, along the top
+    for x in range(7, 10):
+        for y in range(10, 14):
+            m[y][x] = True  # the tail, along the bottom
+    for x in range(1, 6):
+        for y in range(5 - (x - 1), 6 + (x - 1) + 1):
             m[y][x] = True  # the head, pointing left
     return shaded(m, GOLD_H, GOLD, GOLD_D, (150, 96, 20, 255))
 
