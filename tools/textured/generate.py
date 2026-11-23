@@ -432,7 +432,8 @@ def box(w, icon):
 
 
 def back():
-    """Back to the menu before (one slot): a gold arrow turning back, straight 45 degree head, its
+    """Back to the menu before (one slot): a gold arrow turning back from the top (like an undo
+    arrow), straight 45 degree head, its
     underside a shade darker, outlined."""
     n = 16
     m = [[False] * n for _ in range(n)]
@@ -449,6 +450,7 @@ def back():
     for x in range(1, 6):
         for y in range(6 - (x - 1), 6 + (x - 1) + 1):
             m[y][x] = True  # the head, pointing left
+    m = m[::-1]  # turned upside down: the tail leaves from the top, the head points left at the bottom
     t = Image.new("RGBA", (n, n), CLEAR)
     for y in range(n):
         for x in range(n):
