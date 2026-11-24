@@ -159,6 +159,12 @@ public final class GuildData implements Guild {
         ranks.add(rank);
     }
 
+    /** Inserted below the lowest rank: the new rank of new members ({@link #defaultRank}). */
+    public synchronized void addLowestRank(RankData rank) {
+        ranks.addFirst(rank);
+        renumber();
+    }
+
     /** Ranks read from the database, in any order. */
     public synchronized void setRanks(List<RankData> loaded) {
         ranks.clear();
