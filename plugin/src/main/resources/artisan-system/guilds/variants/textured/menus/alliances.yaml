@@ -30,7 +30,7 @@ elements:
     iterates: { source: alliances, alias: a }
     states:
       - if:
-          - placeholder_equals: { placeholder: "{a.state}", value: "ally" }
+          - expression: 'a.state == "ally"'
         image: { asset: guilds_alliance, fit: native }
         material: LIME_BANNER
         title: "<white>{a.name}"
@@ -50,7 +50,7 @@ elements:
               do:
                 - open_menu: { menu_id: alliance_end_confirm, context: { ally: "{a.id}" } }
       - if:
-          - placeholder_equals: { placeholder: "{a.state}", value: "offer" }
+          - expression: 'a.state == "offer"'
         image: { asset: guilds_alliance_offer, fit: native }
         material: YELLOW_BANNER
         title: "<white>{a.name}"
@@ -123,7 +123,7 @@ elements:
     positions: "48-50"
     states:
       - if:
-          - placeholder_equals: { placeholder: "{viewer[0].can_manage_alliances}", value: "true" }
+          - expression: 'viewer[0].can_manage_alliances == "true"'
         image: { asset: guilds_button, fit: native }
         label: { text: { en: "<white>Offer", fr: "<white>Proposer" }, offset_y: 1 }
         title:

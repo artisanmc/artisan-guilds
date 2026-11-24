@@ -73,7 +73,7 @@ public final class RankService {
         GuildData guild = managed(player);
         if (guild == null || !validName(player, guild, miniMessage)) return;
         RankData rank = new RankData(UUID.randomUUID(), miniMessage, 0, Set.of());
-        guild.addRank(rank);
+        guild.addLowestRank(rank);
         store.saveGuild(guild);
         messages.send(player, Msg.RANK_CREATED, "rank", rank.getName());
     }

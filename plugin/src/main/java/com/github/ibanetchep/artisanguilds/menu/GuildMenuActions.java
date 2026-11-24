@@ -60,7 +60,7 @@ public final class GuildMenuActions {
         return ctx;
     }
 
-    /** {@code name}: the new rank goes above the highest. */
+    /** {@code name}: the new rank goes below the lowest. */
     public ActionContext create(ActionContext ctx, Map<String, Object> args, ActionRuntime runtime) {
         ranks.create(ctx.getPlayer(), name(ctx, args, runtime));
         return ctx;

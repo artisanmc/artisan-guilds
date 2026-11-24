@@ -171,7 +171,7 @@ elements:
     positions: "48-50"
     states:
       - if:
-          - placeholder_equals: { placeholder: "{viewer[0].can_manage_ranks}", value: "false" }
+          - expression: 'viewer[0].can_manage_ranks == "false"'
         image: { asset: guilds_button_locked, fit: native }
         label: { text: { en: "<gray>Add", fr: "<gray>Ajouter" }, offset_x: 4, offset_y: 1 }
         title:

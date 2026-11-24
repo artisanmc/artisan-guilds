@@ -95,6 +95,20 @@ class GuildMenuTest {
     // --- data sources ---
 
     @Test
+    void aCreatedRankGoesBelowTheLowest() {
+        RankData founder = top();
+        RankData lowest = bottom();
+        int count = guild.getRanks().size();
+        guilds.ranks().create(owner, "Recrue");
+        assertEquals(count + 1, guild.getRanks().size());
+        assertEquals("Recrue", bottom().getName());
+        assertEquals(0, bottom().getOrder());
+        assertEquals(founder.getId(), top().getId());
+        assertEquals(lowest.getId(), guild.rankAbove(bottom()).getId());
+        assertEquals(bottom().getId(), guild.defaultRank().getId());
+    }
+
+    @Test
     void viewerTellsWhoMayManageTheRanks() {
         Player member = member(guild, "Bob");
         Player outsider = f.player("Eve");
@@ -333,7 +347,7 @@ class GuildMenuTest {
         int ranks = guild.getRanks().size();
         run(owner, actions::create, "name", "<gold>Veteran");
         assertEquals(ranks + 1, guild.getRanks().size());
-        RankData veteran = top();
+        RankData veteran = bottom();
         assertEquals("<gold>Veteran", veteran.getName());
 
         run(owner, actions::rename, "rank", veteran.getId().toString(), "name", " <red>Elder ");

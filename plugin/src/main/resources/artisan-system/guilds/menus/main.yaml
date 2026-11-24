@@ -173,7 +173,7 @@ elements:
         - set_arg: { arg: refresh, value: "{g.chat}" }
     states:
       - if:
-          - placeholder_equals: { placeholder: "{g.chat}", value: "guild" }
+          - expression: 'g.chat == "guild"'
         material: LIME_DYE
         title:
           en: "<yellow>Chat: <green>guild"
@@ -192,7 +192,7 @@ elements:
             - module_command: { command: "guilds:guild.chat" }
             - set_arg: { arg: refresh, value: "{g.chat}" }
       - if:
-          - placeholder_equals: { placeholder: "{g.chat}", value: "ally" }
+          - expression: 'g.chat == "ally"'
         material: LIGHT_BLUE_DYE
         title:
           en: "<yellow>Chat: <aqua>alliance"

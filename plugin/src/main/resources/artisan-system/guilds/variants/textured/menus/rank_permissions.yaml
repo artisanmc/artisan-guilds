@@ -60,7 +60,7 @@ elements:
         - set_arg: { arg: refresh, value: "{p.key}" }
     states:
       - if:
-          - placeholder_equals: { placeholder: "{p.granted}", value: "true" }
+          - expression: 'p.granted == "true"'
         image: { asset: guilds_permission_on, fit: native }
         material: LIME_DYE
         title: "<green>✔ <white>{p.name}"
