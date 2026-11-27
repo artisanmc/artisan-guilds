@@ -226,6 +226,7 @@ public final class GuildsModule implements ArtisanModule {
         }
     }
 
+    /** A Deploy, {@code /artisan reload [guilds]}, {@code /guild reload}: data/settings.yml read again (Artisan reads the lang files). */
     @Override
     public void onReload() {
         reloadSettings.run();
