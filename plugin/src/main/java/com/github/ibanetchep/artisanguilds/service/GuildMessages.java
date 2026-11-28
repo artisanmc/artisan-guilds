@@ -80,6 +80,11 @@ public final class GuildMessages {
         return MiniMessage.miniMessage().deserialize(bundle.format(bundle.raw(viewer, msg.key()), map(placeholders)));
     }
 
+    /** The language of a player whose own is not offered: data/settings.yml's {@code language} at start. */
+    public String defaultLang() {
+        return bundle.getDefaultLang();
+    }
+
     /** {@code lang/*.yml} read again (edits of the server's files). */
     public void reload() {
         bundle.reload();

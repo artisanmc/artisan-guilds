@@ -26,7 +26,7 @@ sidebar:
 | `/guild info [guild]`, `list [page]`, `logs [page] [guild]` | Information, online guilds, the guild log. | `/g info Smiths` |
 | `/guild alliance` | The alliances menu: allies, offers to answer, offers sent. | |
 | `/guild alliance invite\|accept\|remove <guild>` | Alliances. | `/g alliance invite Miners` |
-| `/guild reload` | Reloads the configuration and messages. Needs `guilds.reload`. | |
+| `/guild reload` | Reloads this server's `config.yml`, then the guilds module's folder (menus, messages, `data/settings.yml` levels), as a Deploy from the editor does: the same as `/artisan reload guilds` (Artisan 1.12+). `/artisan reload` reloads every module, guilds included. `language` applies at the next restart. Needs `guilds.reload`. | |
 | `/guild admin setlevel <guild> <level>` | Sets a guild's level; also from the console. Needs `guilds.admin.setlevel`. | `guild admin setlevel Smiths 3` |
 
 ## Rank permissions

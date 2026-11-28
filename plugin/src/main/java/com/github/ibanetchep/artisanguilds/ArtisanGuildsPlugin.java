@@ -74,6 +74,10 @@ public final class ArtisanGuildsPlugin extends JavaPlugin {
     public static final String TABLES = "guilds";
 
     private @Nullable ArtisanAPI api;
+    /** The API whose {@code project.reload(moduleId)} reloads this module alone. */
+    static final String MODULE_RELOAD_API = "1.12.0";
+    /** The guilds module registered with Artisan: its folder is Artisan's to reload. */
+    private boolean moduleRegistered;
     /** plugins/ArtisanGuilds/artisan_module/, null when Artisan gives none. */
     private @Nullable File moduleFolder;
     private @Nullable Guilds guilds;
@@ -210,7 +214,8 @@ public final class ArtisanGuildsPlugin extends JavaPlugin {
         // The guild, members, ranks and disband menus those commands open, with their data sources and actions.
         // /guild too: registered by the module, it is a file of the module's folder, edited in the editor.
         try {
-            api.getModules().register(new GuildsModule(running, messages, commands, () -> reloadLevels(leveling), getLogger(), moduleDir()));
+            api.getModules().register(new GuildsModule(running, messages, commands, () -> reloadSettings(messages, leveling), getLogger(), moduleDir()));
+            moduleRegistered = true;
         } catch (RuntimeException e) {
             getLogger().log(Level.WARNING, "The guild menus are not available", e);
         }
@@ -219,17 +224,33 @@ public final class ArtisanGuildsPlugin extends JavaPlugin {
         return running;
     }
 
-    /** {@code /guild reload}: config.yml, the levels and the lang files, read again. */
+    /**
+     * {@code /guild reload}: this server's config.yml, then the module's folder as a Deploy reads it.
+     * With Artisan API {@value #MODULE_RELOAD_API}+, Artisan reads the folder again (menus, commands,
+     * lang files) and calls {@link GuildsModule#onReload}, which reads data/settings.yml: the same as
+     * {@code /artisan reload guilds}. With an older Artisan, the lang files and the levels only.
+     */
     private void reload(GuildMessages messages, GuildLeveling leveling) {
         reloadConfig();
+        ArtisanAPI current = api;
+        if (moduleRegistered && current != null && current.isCompatibleWith(MODULE_RELOAD_API)) {
+            current.getProject().reload(GuildsModule.ID);
+            return;
+        }
         messages.reload();
-        reloadLevels(leveling);
+        reloadSettings(messages, leveling);
     }
 
-    /** The levels of data/settings.yml, read again: {@code /guild reload} and each Deploy. */
-    private void reloadLevels(GuildLeveling leveling) {
+    /** data/settings.yml read again: {@code /guild reload}, {@code /artisan reload} and each Deploy. */
+    private void reloadSettings(GuildMessages messages, GuildLeveling leveling) {
+        ConfigurationSection settings = settings();
+        String language = settings.getString("language");
+        if (language != null && !language.equalsIgnoreCase(messages.defaultLang())) {
+            getLogger().warning(GuildSettings.PATH + ": language '" + language + "' applies at the next restart (now '"
+                    + messages.defaultLang() + "').");
+        }
         NavigableMap<Integer, GuildLevelInfo> levels =
-                GuildLeveling.read(settings().getConfigurationSection("levels"), getLogger());
+                GuildLeveling.read(settings.getConfigurationSection("levels"), getLogger());
         if (levels.isEmpty()) {
             getLogger().warning(GuildSettings.PATH + " defines no level: the previous levels stay.");
             return;
